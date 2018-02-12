@@ -1,0 +1,119 @@
+
+// tool3.h : main header file for the tool3 application
+//
+#pragma once
+
+#ifndef __AFXWIN_H__
+	#error "include 'stdafx.h' before including this file for PCH"
+#endif
+#include <cstdint>
+
+#include "resource.h"       // main symbols
+
+	_declspec(align(16)) struct triggerblock
+{	
+	_declspec(align(16)) double q;
+	_declspec(align(16)) long long block[3];
+	_declspec(align(16)) long long b;
+	_declspec(align(16)) long long t;
+	_declspec(align(16)) tm *c;
+	_declspec(align(16)) tm *p;
+	_declspec(align(16)) BYTE ptrigger;
+	_declspec(align(16)) float outofthis;
+	_declspec(align(16)) double x;
+	_declspec(align(16)) long double F;
+	_declspec(align(16)) short finishup;
+	_declspec(align(16)) double f;
+	_declspec(align(16)) BYTE E;
+};
+
+
+
+struct Transaction{
+#ifdef _MSC_VER
+#pragma pack(1)
+#endif
+	/* Hash of Tx */
+	uint8_t merkleHash[32];
+	
+	/* Tx serialization before hashing */
+	uint8_t *serializedData;
+	
+	/* Tx version */
+	uint32_t version;    
+	
+	/* Input */
+	uint8_t numInputs; // Program assumes one input
+	uint8_t prevOutput[32];
+	uint32_t prevoutIndex;
+	uint8_t *scriptSig;
+	uint32_t sequence;
+	
+	/* Output */
+	uint8_t numOutputs; // Program assumes one output
+	uint64_t outValue;
+	uint8_t *pubkeyScript;
+	
+	/* Final */
+	uint32_t locktime;
+#ifdef _MSC_VER
+} ;
+#else
+} __attribute__((packed));
+#endif
+
+		//here is POD coz there is no constructors and others
+
+struct blockheader {
+#ifdef _MSC_VER
+#pragma pack(1)
+#endif
+	uint32_t blockversion;
+	unsigned char hashPrevBlock[32];
+	unsigned char merk[32];
+	uint32_t unixtime;
+	uint32_t nBits;
+	uint32_t startNonce;
+#ifdef _MSC_VER
+};
+#else
+} __attribute__((packed));
+#endif
+
+
+struct blockhash {
+#ifdef _MSC_VER
+#pragma pack(1)
+#endif
+	unsigned char bl[28];
+	uint32_t checkbytes;
+#ifdef _MSC_VER
+};
+#else
+} __attribute__((packed));
+#endif
+
+
+// Ctool3App:
+// See tool3.cpp for the implementation of this class
+//
+
+class Ctool3App : public CWinApp
+{
+public:
+	Ctool3App();
+	int start;
+
+// Overrides
+public:
+	virtual BOOL InitInstance();
+	virtual int ExitInstance();
+
+// Implementation
+
+public:
+
+	DECLARE_MESSAGE_MAP()
+};
+
+extern Ctool3App theApp;

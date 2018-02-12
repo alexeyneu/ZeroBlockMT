@@ -1,0 +1,398 @@
+
+// MainFrm.cpp : implementation of the CMainFrame class
+//
+ 
+
+#include "stdafx.h"
+#include "tool3.h"
+#include <Richedit.h>
+#include "MainFrm.h"
+#include <openssl/sha.h>
+#include <iomanip>
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#endif
+
+// CMainFrame
+
+IMPLEMENT_DYNAMIC(CMainFrame, CWnd)
+
+BEGIN_MESSAGE_MAP(CMainFrame, CWnd)
+	ON_WM_CREATE()
+	ON_BN_CLICKED(2133,tr)
+	ON_BN_CLICKED(233,w)
+	ON_WM_DESTROY()
+	ON_WM_CLOSE()
+END_MESSAGE_MAP()
+
+// CMainFrame construction/destruction
+
+CMainFrame::CMainFrame()
+{
+	// TODO: add member initialization code here
+}
+
+CMainFrame::~CMainFrame()
+{
+}
+
+
+// CMainFrame diagnostics
+
+#ifdef _DEBUG
+
+
+
+#endif //_DEBUG
+
+
+// CMainFrame message handlers
+
+
+
+HWND hc,hz;
+CButton *bh;
+CButton *q;
+CStatic *b7;
+HANDLE cl;
+
+int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
+{	
+	cl=CreateEvent(NULL,1,0,NULL);
+	if (CWnd::OnCreate(lpCreateStruct) == -1)
+		return -1;
+	bh=new CButton();
+
+	b7=new CStatic();
+	q=new CButton();
+	CBitmap wq[2];
+
+	wq[0].LoadBitmap(IDB_BITMAP1);
+	wq[1].LoadBitmap(IDB_BITMAP4);
+
+	wchar_t w[140];
+
+	bh->Create(L"start",BS_BITMAP|WS_CHILD|WS_VISIBLE,CRect(50,50,170,100),this,2133);
+	bh->SetBitmap(wq[0]);
+	q->Create(L"stop",BS_BITMAP|WS_CHILD|WS_VISIBLE|WS_DISABLED,CRect(50+170,50,170+170,100),this,233);
+	q->SetBitmap(wq[1]);
+	b7->Create(L"to go :",WS_CHILD|WS_VISIBLE|SS_WHITEFRAME|SS_SIMPLE,CRect(3,290,473,320),this);
+	 hc=CreateWindowEx(WS_EX_NOPARENTNOTIFY, MSFTEDIT_CLASS,NULL, 
+		ES_MULTILINE|ES_AUTOVSCROLL| WS_VISIBLE | WS_CHILD |WS_TABSTOP|WS_VSCROLL, 
+        1, 350, 450, 201, this->m_hWnd, NULL, h, NULL);
+	HFONT newFont = CreateFont(22, 0, 0, 0,0 , FALSE, FALSE, FALSE, DEFAULT_CHARSET,
+    OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_NATURAL_QUALITY,
+	DEFAULT_PITCH | FF_DECORATIVE, L"Lucida Console");
+	
+	::PostMessage(hc,WM_SETFONT,(WPARAM)newFont,(LPARAM)0);
+	hz=this->m_hWnd;
+	::PostMessage(b7->m_hWnd,WM_SETFONT,(WPARAM)newFont,(LPARAM)0);
+	return 0;
+}
+
+void byteswap(uint8_t *buf, int length)
+{
+	std::reverse(buf, buf +  length); 
+}
+
+// Following function is borrowed from cgminer.
+char *bin2hex(const unsigned char *p, size_t len)
+{
+	char *s = (char *)malloc((len * 2) + 1);
+	unsigned int i;
+
+	if (!s)
+		return NULL;
+
+	for (i = 0; i < len; i++)
+		sprintf(s + (i * 2), "%02x", (unsigned int) p[i]);
+
+	return s;
+}
+
+
+size_t hex2bin(unsigned char *p /* out */, const char *hexstr, size_t len)
+{
+	size_t wlen = len;
+
+	while (wlen && *hexstr && *(hexstr+1))    //last condition cause np if check fails on middle one.thats coz of short-circuit evaluation
+        {
+		len*=sscanf(hexstr, "%2hhx",p++);   // 0 or 1 (maybe smth else too) . Slow stuff , np  		
+		hexstr += 2;
+		wlen--;
+	}
+	return  (wlen == 0)*len;     // zero if error .had enough 
+}
+
+
+Transaction *InitTransaction()
+{
+	Transaction *transaction;
+	
+	transaction = (Transaction *)calloc(1, sizeof(*transaction));
+	// Set some initial data that will remain constant throughout the program
+	transaction->version = /* drift */ 1;
+	transaction->numInputs = 1;
+	transaction->numOutputs = 1;
+	transaction->locktime = 0;
+	transaction->prevoutIndex = 0xFFFFFFFF;
+	transaction->sequence = 0xFFFFFFFF;
+	transaction->outValue = 50*COIN;
+	
+	// We initialize the previous output to 0 as there is none
+	
+	return transaction;
+}
+
+
+
+
+
+int bren=5;
+int cr,f,b,terminator;
+
+VOID c(VOID *)
+{				
+    q->EnableWindow();
+    CWin32Heap stringHeap(HEAP_NO_SERIALIZE, 0, 0);
+    CAtlStringMgr M(&stringHeap);
+    triggerblock  z = {};
+    CString t(&M), bear(&M);
+    SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED | ES_DISPLAY_REQUIRED);
+	SETTEXTEX fw;
+	fw.flags=4;
+	fw.codepage=1200;
+    	Transaction *transaction;
+	unsigned char hash1[32];
+	uint32_t timestamp_len = 0, scriptSig_len = 0, pubkey_len = 0, pubkeyScript_len = 0;
+	    
+	pubkey_len = strlen(pubkey) / 2; // One byte is represented as two hex characters, thus we divide by two to get real length.
+	timestamp_len = strlen(timestamp);
+
+	transaction = InitTransaction();
+	scriptSig_len = timestamp_len;
+
+	// Encode pubkey to binary and prepend pubkey size, then append the OP_CHECKSIG byte	
+	pubkeyScript_len =pubkey_len+2;
+	transaction->pubkeyScript =(uint8_t *)malloc(pubkeyScript_len);
+	transaction->pubkeyScript[0] = 0x41; //   A public key is 32 bytes X coordinate, 32 bytes Y coordinate and one byte 0x04, so 65 bytes i.e 0x41 in Hex.
+	hex2bin(transaction->pubkeyScript+1, pubkey, pubkey_len); // No error checking, yeah.
+	transaction->pubkeyScript[pubkeyScript_len - 1] = OP_CHECKSIG;
+	
+	// Encode timestamp to binary
+	transaction->scriptSig =(uint8_t *) malloc(scriptSig_len);
+	uint32_t scriptSig_pos = 0;
+	
+	
+	// This is basically how I believe the size of the nBits is calculated
+	if	(nBits < 0x100)
+	{
+		transaction->scriptSig[scriptSig_pos++] = 0x01;
+		transaction->scriptSig[scriptSig_pos++] = (uint8_t)nBits;
+	}
+	else  if(nBits < 0x10000)
+	{
+		transaction->scriptSig[scriptSig_pos++] = 0x02;
+		memcpy(transaction->scriptSig+scriptSig_pos, &nBits, 2);
+		scriptSig_pos+=2;
+	}	
+	else  if(nBits < 0x1000000)
+	{
+		transaction->scriptSig[scriptSig_pos++] = 0x03;
+		memcpy(transaction->scriptSig+scriptSig_pos, &nBits, 3);
+		scriptSig_pos+=3;
+	}
+	else //else if(nBits < 4294967296LL)
+	{
+		transaction->scriptSig[scriptSig_pos++] = 0x04;
+		memcpy(transaction->scriptSig+scriptSig_pos, &nBits, 4);
+		scriptSig_pos+=4;
+	}
+	//below  works only if structure alignment turned off .
+
+	// In the Bitcoin code there is a statement 'CBigNum(4)' 
+	// i've been wondering for a while what it is but
+	// seeing as alt-coins keep it the same, we'll do it here as well
+	// It should essentially mean PUSH 1 byte on the stack which in this case is 0x04 or just 4
+	transaction->scriptSig[scriptSig_pos++] = 0x01;
+	transaction->scriptSig[scriptSig_pos++] = 0x04;
+	
+	transaction->scriptSig[scriptSig_pos++] = (uint8_t)scriptSig_len; 
+	
+	scriptSig_len += scriptSig_pos;
+	transaction->scriptSig = (uint8_t*)realloc(transaction->scriptSig, scriptSig_len);
+	memcpy(transaction->scriptSig+scriptSig_pos, (const unsigned char *)timestamp, timestamp_len);
+	
+	uint32_t serializedLen = 
+	4    // tx version  
+	+1   // number of inputs
+	+32  // hash of previous output
+	+4   // previous output's index
+	+1   // 1 byte for the size of scriptSig (?)
+	+scriptSig_len
+	+4   // size of sequence
+	+1   // number of outputs
+	+8   // 8 bytes for coin value
+	+1   // 1 byte to represent size of the pubkey Script
+	+pubkeyScript_len
+	+4;   // 4 bytes for lock time
+	
+	// Now let's serialize the data
+	uint32_t serializedData_pos = 0;
+	transaction->serializedData = (uint8_t *)malloc(serializedLen);
+	memcpy(transaction->serializedData, &transaction->version, 41/* 4 + 1 + 32 + 4 */);  
+	/* fo' sho' */
+//	std::cout << offsetof(Transaction,prevoutIndex) + sizeof(uint32_t) - offsetof(Transaction,version);	
+	serializedData_pos += 41; 
+	memcpy(transaction->serializedData+serializedData_pos, &scriptSig_len, 1);
+	serializedData_pos += 1;
+	memcpy(transaction->serializedData+serializedData_pos, transaction->scriptSig, scriptSig_len);
+	serializedData_pos += scriptSig_len;
+	memcpy(transaction->serializedData+serializedData_pos, &transaction->sequence, 13/* 4 + 1 + 8 */);
+	serializedData_pos += 13;
+	memcpy(transaction->serializedData+serializedData_pos, &pubkeyScript_len, 1);
+	serializedData_pos += 1;
+	memcpy(transaction->serializedData+serializedData_pos, transaction->pubkeyScript, pubkeyScript_len);
+	serializedData_pos += pubkeyScript_len;
+	memcpy(transaction->serializedData+serializedData_pos, &transaction->locktime, 4);
+	serializedData_pos += 4;	
+	
+	// Now that the data is serialized
+	// we hash it with SHA256 and then hash that result to get merkle hash
+	SHA256(transaction->serializedData, serializedLen, hash1);
+	SHA256(hash1, 32, transaction->merkleHash);
+	
+	char *merkleHash = bin2hex(transaction->merkleHash, 32);
+	byteswap(transaction->merkleHash, 32); 
+	char *merkleHashSwapped = bin2hex(transaction->merkleHash, 32);
+	char *txScriptSig = bin2hex(transaction->scriptSig, scriptSig_len);
+	char *pubScriptSig = bin2hex(transaction->pubkeyScript, pubkeyScript_len);
+	t.Format(L"\nCoinbase: %S\n\nPubkeyScript: %S\n\nMerkle Hash: %S\nByteswapped: %S\n",txScriptSig, pubScriptSig, merkleHash, merkleHashSwapped);
+	bear=bear+t+L"Generating block...\n\n";
+	SendMessage(hc,EM_SETTEXTEX,(WPARAM)&fw,(LPARAM)(LPCWSTR)bear);
+	PostMessage(hc, WM_VSCROLL, SB_BOTTOM, 0);					                   
+	
+		unsigned char  block_hash1[32];
+		blockheader block_header={/* drift */ 1 , {} , {} , unixtime == 0 ? time(NULL) : unixtime,  nBits , startNonce };
+		blockhash block_hashf;
+		unsigned char* block_headerp=(unsigned char*)&block_header;
+		unsigned char* block_hashfp=(unsigned char*)&block_hashf;
+		byteswap(transaction->merkleHash, 32); // We swapped it before, so do it again now.
+		memcpy(&block_header.merk, transaction->merkleHash, 32);
+		unsigned int counter=0, start = time(NULL);
+		std::wstringstream w;
+		std::ios_base::iostate x=0;
+    while (1) {
+		{
+			SHA256(block_headerp, 80, block_hash1);
+			SHA256(block_hash1, 32, block_hashfp);
+			
+			 // The hash is in little-endian, so we check the last 4 bytes.
+			if(block_hashf.checkbytes == 0) // { .. , 0x00, 0x00, 0x00, 0x00 }
+			{
+				byteswap(block_hashfp, 32);
+				char *blockHash = bin2hex(block_hashfp, 32);
+				t.Format(L"\nBlock found!\nHash: %S\nNonce: %u\nUnix time: %u\n", blockHash, block_header.startNonce, block_header.unixtime);
+				bear=bear+t;
+				SendMessage(hc,EM_SETTEXTEX,(WPARAM)&fw,(LPARAM)(LPCWSTR)bear);
+				PostMessage(hc, WM_VSCROLL, SB_BOTTOM, 0);					                   
+				free(blockHash);
+				b=1;
+			}
+			
+			
+			counter++;
+			if(time(NULL)-start > 0)
+			{
+				w<<std::setw(7)<< counter<<L" Hashes/s, Nonce "<< std::setw(10.10)<< block_header.startNonce;
+				counter = 0;
+				start = time(NULL);
+				b7->SetWindowTextW((LPCWSTR)w.str().c_str());
+				w.clear(x, 0);
+				w.str(L"");
+			}
+			
+
+			if(block_header.startNonce == 0x100000000 - 1)
+			{
+				block_header.unixtime++; //trick is that to change pre-start time to find a block(really it's smth else) faster then nonce wraps
+			}
+			block_header.startNonce++;
+		}
+	
+	if (b) {
+	    q->EnableWindow(0);
+	    b = 0;
+	    bh->EnableWindow();
+	    if (terminator) PostMessage(hz, WM_CLOSE, NULL, NULL);
+	    else {	    }
+	free(merkleHash);
+	free(merkleHashSwapped);
+	free(txScriptSig);
+	free(pubScriptSig);
+	free(transaction->serializedData);
+	free(transaction->scriptSig);
+	free(transaction->pubkeyScript);
+	free(transaction);
+    
+	    bren = 5;
+	    break;
+	}
+    }
+}
+
+
+CWinThread *rew;
+int terminator2;
+
+void CMainFrame::tr()
+{   
+			bren=0;
+			AfxBeginThread((AFX_THREADPROC)c,NULL,0,1400000);
+}
+
+void CMainFrame::w()
+{
+	b=1;
+}
+
+
+
+
+void CMainFrame::OnDestroy()
+{
+	CWnd::OnDestroy();
+	delete bh;
+	delete q;
+	delete b7;
+//	delete rew;
+
+	// TODO: Add your message handler code here
+}
+
+
+
+
+void CMainFrame::OnClose()
+{
+	wchar_t w[140],ferrum[198];
+	if(terminator2)
+	{
+		SetEvent(cl);
+		CWnd::OnClose();
+	}
+	terminator2++;
+
+	if((!b)&&(bren))	
+	{
+		SetEvent(cl);
+		CWnd::OnClose();
+	}
+	else
+	{
+		terminator =1;
+		if(!b) this->w();
+	}
+}
+
