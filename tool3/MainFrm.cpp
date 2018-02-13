@@ -55,13 +55,11 @@ HWND hc,hz;
 CButton *bh;
 CButton *q;
 CStatic *b7[3];
-HANDLE cl[3];
+HANDLE cl;
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {	
-	cl[0]=CreateEvent(NULL,1,0,NULL);
-	cl[1]=CreateEvent(NULL,1,0,NULL);
-	cl[2]=CreateEvent(NULL,1,0,NULL);
+	cl=CreateEvent(NULL,1,0,NULL);
 	if (CWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
 	bh=new CButton();
@@ -163,7 +161,6 @@ int cr,f,b,terminator;
 VOID c(VOID *x)
 {	
     const byte c=(byte)x; 
-	ResetEvent(cl[c]); 
     q->EnableWindow();
     bh->EnableWindow(0);
     CWin32Heap stringHeap(HEAP_NO_SERIALIZE, 0, 0);
@@ -344,24 +341,23 @@ VOID c(VOID *x)
 	free(transaction->serializedData);
 	free(transaction->scriptSig);
 	free(transaction->pubkeyScript);
-	free(transaction);SetEvent(cl[c]);
+	free(transaction);
 	    bren = 5;
-	 SetEvent(cl[c]); 
 	    break;
 	}
     }
 }
 
 
-CWinThread *rew;
+CWinThread *rew[3];
 int terminator2;
 
 void CMainFrame::tr()
 {   
 			bren=0;
-			AfxBeginThread((AFX_THREADPROC)c,(LPVOID)0,0,1400000);
-			AfxBeginThread((AFX_THREADPROC)c,(LPVOID)1,0,1400000);
-			AfxBeginThread((AFX_THREADPROC)c,(LPVOID)2,0,1400000);
+			rew[0]=AfxBeginThread((AFX_THREADPROC)c,(LPVOID)0);
+			rew[1]=AfxBeginThread((AFX_THREADPROC)c,(LPVOID)1);
+			rew[2]=AfxBeginThread((AFX_THREADPROC)c,(LPVOID)2);
 }
 
 void CMainFrame::w()
@@ -393,7 +389,8 @@ void CMainFrame::OnClose()
 	wchar_t w[140],ferrum[198];
 	if(terminator2)
 	{
-	DWORD c = WaitForMultipleObjects(3,cl,0,20000); // 20 seconds
+	HANDLE t[]={rew[0]->m_hThread,rew[1]->m_hThread,rew[2]->m_hThread};    
+	DWORD c = WaitForMultipleObjects(3,t,1,20000); // 20 seconds
 //	if(c==WAIT_TIMEOUT) 
 	CWnd::OnClose();
 	}

@@ -10,25 +10,6 @@
 
 #include "resource.h"       // main symbols
 
-	_declspec(align(16)) struct triggerblock
-{	
-	_declspec(align(16)) double q;
-	_declspec(align(16)) long long block[3];
-	_declspec(align(16)) long long b;
-	_declspec(align(16)) long long t;
-	_declspec(align(16)) tm *c;
-	_declspec(align(16)) tm *p;
-	_declspec(align(16)) BYTE ptrigger;
-	_declspec(align(16)) float outofthis;
-	_declspec(align(16)) double x;
-	_declspec(align(16)) long double F;
-	_declspec(align(16)) short finishup;
-	_declspec(align(16)) double f;
-	_declspec(align(16)) BYTE E;
-};
-
-
-
 struct Transaction{
 #ifdef _MSC_VER
 #pragma pack(1)
