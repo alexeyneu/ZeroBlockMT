@@ -54,17 +54,21 @@ CMainFrame::~CMainFrame()
 HWND hc,hz;
 CButton *bh;
 CButton *q;
-CStatic *b7;
-HANDLE cl;
+CStatic *b7[3];
+HANDLE cl[3];
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {	
-	cl=CreateEvent(NULL,1,0,NULL);
+	cl[0]=CreateEvent(NULL,1,0,NULL);
+	cl[1]=CreateEvent(NULL,1,0,NULL);
+	cl[2]=CreateEvent(NULL,1,0,NULL);
 	if (CWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
 	bh=new CButton();
 
-	b7=new CStatic();
+	b7[0]=new CStatic();
+	b7[1]=new CStatic();
+	b7[2]=new CStatic();
 	q=new CButton();
 	CBitmap wq[2];
 
@@ -77,7 +81,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	bh->SetBitmap(wq[0]);
 	q->Create(L"stop",BS_BITMAP|WS_CHILD|WS_VISIBLE|WS_DISABLED,CRect(50+170,50,170+170,100),this,233);
 	q->SetBitmap(wq[1]);
-	b7->Create(L"to go :",WS_CHILD|WS_VISIBLE|SS_WHITEFRAME|SS_SIMPLE,CRect(3,290,473,320),this);
+	b7[0]->Create(L"to go :",WS_CHILD|WS_VISIBLE|SS_WHITEFRAME|SS_SIMPLE,CRect(3,290,473,320),this);
+	b7[1]->Create(L"to go :",WS_CHILD|WS_VISIBLE|SS_WHITEFRAME|SS_SIMPLE,CRect(3,290-70,473,320-70),this);
+	b7[2]->Create(L"to go :",WS_CHILD|WS_VISIBLE|SS_WHITEFRAME|SS_SIMPLE,CRect(3,290-35,473,320-35),this);
 	 hc=CreateWindowEx(WS_EX_NOPARENTNOTIFY, MSFTEDIT_CLASS,NULL, 
 		ES_MULTILINE|ES_AUTOVSCROLL| WS_VISIBLE | WS_CHILD |WS_TABSTOP|WS_VSCROLL, 
         1, 350, 450, 201, this->m_hWnd, NULL, h, NULL);
@@ -87,7 +93,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	
 	::PostMessage(hc,WM_SETFONT,(WPARAM)newFont,(LPARAM)0);
 	hz=this->m_hWnd;
-	::PostMessage(b7->m_hWnd,WM_SETFONT,(WPARAM)newFont,(LPARAM)0);
+	::PostMessage(b7[0]->m_hWnd,WM_SETFONT,(WPARAM)newFont,(LPARAM)0);
+	::PostMessage(b7[1]->m_hWnd,WM_SETFONT,(WPARAM)newFont,(LPARAM)0);
+	::PostMessage(b7[2]->m_hWnd,WM_SETFONT,(WPARAM)newFont,(LPARAM)0);
 	return 0;
 }
 
@@ -152,12 +160,14 @@ Transaction *InitTransaction()
 int bren=5;
 int cr,f,b,terminator;
 
-VOID c(VOID *)
-{				
+VOID c(VOID *x)
+{	
+    const byte c=(byte)x; 
+	ResetEvent(cl[c]); 
     q->EnableWindow();
+    bh->EnableWindow(0);
     CWin32Heap stringHeap(HEAP_NO_SERIALIZE, 0, 0);
     CAtlStringMgr M(&stringHeap);
-    triggerblock  z = {};
     CString t(&M), bear(&M);
     SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED | ES_DISPLAY_REQUIRED);
 	SETTEXTEX fw;
@@ -274,7 +284,7 @@ VOID c(VOID *)
 	PostMessage(hc, WM_VSCROLL, SB_BOTTOM, 0);					                   
 	
 		unsigned char  block_hash1[32];
-		blockheader block_header={/* drift */ 1 , {} , {} , unixtime == 0 ? time(NULL) : unixtime,  nBits , startNonce };
+		blockheader block_header={/* drift */ 1 , {} , {} , unixtime == 0 ? time(NULL) + c : unixtime + c,  nBits , startNonce };
 		blockhash block_hashf;
 		unsigned char* block_headerp=(unsigned char*)&block_header;
 		unsigned char* block_hashfp=(unsigned char*)&block_hashf;
@@ -282,7 +292,7 @@ VOID c(VOID *)
 		memcpy(&block_header.merk, transaction->merkleHash, 32);
 		unsigned int counter=0, start = time(NULL);
 		std::wstringstream w;
-		std::ios_base::iostate x=0;
+		std::ios_base::iostate xh=0;
     while (1) {
 		{
 			SHA256(block_headerp, 80, block_hash1);
@@ -298,7 +308,7 @@ VOID c(VOID *)
 				SendMessage(hc,EM_SETTEXTEX,(WPARAM)&fw,(LPARAM)(LPCWSTR)bear);
 				PostMessage(hc, WM_VSCROLL, SB_BOTTOM, 0);					                   
 				free(blockHash);
-				b=1;
+				b=9;
 			}
 			
 			
@@ -308,25 +318,25 @@ VOID c(VOID *)
 				w<<std::setw(7)<< counter<<L" Hashes/s, Nonce "<< std::setw(10.10)<< block_header.startNonce;
 				counter = 0;
 				start = time(NULL);
-				b7->SetWindowTextW((LPCWSTR)w.str().c_str());
-				w.clear(x, 0);
+				b7[c]->SetWindowTextW((LPCWSTR)w.str().c_str());
+				w.clear(xh, 0);
 				w.str(L"");
 			}
 			
 
 			if(block_header.startNonce == 0x100000000 - 1)
 			{
-				block_header.unixtime++; //trick is that to change pre-start time to find a block(really it's smth else) faster then nonce wraps
+				block_header.unixtime=block_header.unixtime + 3;//trick is that to change pre-start time to find a block(really it's smth else) faster then nonce wraps
 			}
 			block_header.startNonce++;
 		}
 	
 	if (b) {
 	    q->EnableWindow(0);
-	    b = 0;
 	    bh->EnableWindow();
-	    if (terminator) PostMessage(hz, WM_CLOSE, NULL, NULL);
+	    if (terminator) { PostMessage(hz, WM_CLOSE, NULL, NULL);}
 	    else {	    }
+	    b -= 3;
 	free(merkleHash);
 	free(merkleHashSwapped);
 	free(txScriptSig);
@@ -334,9 +344,9 @@ VOID c(VOID *)
 	free(transaction->serializedData);
 	free(transaction->scriptSig);
 	free(transaction->pubkeyScript);
-	free(transaction);
-    
+	free(transaction);SetEvent(cl[c]);
 	    bren = 5;
+	 SetEvent(cl[c]); 
 	    break;
 	}
     }
@@ -349,12 +359,14 @@ int terminator2;
 void CMainFrame::tr()
 {   
 			bren=0;
-			AfxBeginThread((AFX_THREADPROC)c,NULL,0,1400000);
+			AfxBeginThread((AFX_THREADPROC)c,(LPVOID)0,0,1400000);
+			AfxBeginThread((AFX_THREADPROC)c,(LPVOID)1,0,1400000);
+			AfxBeginThread((AFX_THREADPROC)c,(LPVOID)2,0,1400000);
 }
 
 void CMainFrame::w()
 {
-	b=1;
+	b=9;
 }
 
 
@@ -365,7 +377,9 @@ void CMainFrame::OnDestroy()
 	CWnd::OnDestroy();
 	delete bh;
 	delete q;
-	delete b7;
+	delete b7[0];
+	delete b7[1];
+	delete b7[2];
 //	delete rew;
 
 	// TODO: Add your message handler code here
@@ -379,14 +393,14 @@ void CMainFrame::OnClose()
 	wchar_t w[140],ferrum[198];
 	if(terminator2)
 	{
-		SetEvent(cl);
-		CWnd::OnClose();
+	DWORD c = WaitForMultipleObjects(3,cl,0,20000); // 20 seconds
+//	if(c==WAIT_TIMEOUT) 
+	CWnd::OnClose();
 	}
 	terminator2++;
 
 	if((!b)&&(bren))	
 	{
-		SetEvent(cl);
 		CWnd::OnClose();
 	}
 	else
