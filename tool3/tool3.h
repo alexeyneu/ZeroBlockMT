@@ -10,6 +10,10 @@
 
 #include "resource.h"       // main symbols
 
+/*structures to represent all that. defines're there so to make it compatible with hash functions. transaction structure 
+doesn't need that.same define statements there to ensure that nothing more is in memory  so first : it can be copied as memory block wo care (not a big deal) ,
+second : if structure has alignment you can copy it as block too but it gives nothing in this case.*/
+
 struct Transaction{
 #ifdef _MSC_VER
 #pragma pack(1)

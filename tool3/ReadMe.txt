@@ -41,7 +41,14 @@ For the main frame window:
 
 MainFrm.h, MainFrm.cpp
     These files contain the frame class CMainFrame, which is derived from
-    CFrameWnd and controls all SDI frame features.
+    CFrameWnd 
+
+also
+
+tool3.h:
+structures to represent all that. defines're there so to make it compatible with hash functions. transaction structure 
+doesn't need that.same define statements there to ensure that nothing more is in memory  so first : it can be copied as memory block wo care (not a big deal) ,
+second : if structure has alignment you can copy it as block too but it gives nothing in this case.
 
 /////////////////////////////////////////////////////////////////////////////
 

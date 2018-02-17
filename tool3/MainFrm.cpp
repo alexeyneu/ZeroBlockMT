@@ -9,6 +9,7 @@
 #include "MainFrm.h"
 #include <openssl/sha.h>
 #include <iomanip>
+#include "mount.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -22,6 +23,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CWnd)
 	ON_WM_CREATE()
 	ON_BN_CLICKED(2133,tr)
 	ON_BN_CLICKED(233,w)
+	ON_BN_CLICKED(2233,uw)
 	ON_WM_DESTROY()
 	ON_WM_CLOSE()
 END_MESSAGE_MAP()
@@ -49,16 +51,18 @@ CMainFrame::~CMainFrame()
 
 // CMainFrame message handlers
 
-
+mount *mount_tx;
 
 HWND hc,hz;
 CButton *bh;
 CButton *q;
 CStatic *b7[3];
 HANDLE cl;
+CButton *finA;
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {	
+	mount_tx=NULL;
 	cl=CreateEvent(NULL,1,0,NULL);
 	if (CWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
@@ -69,20 +73,22 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	b7[2]=new CStatic();
 	q=new CButton();
 	CBitmap wq[2];
+	finA=new CButton();
 
 	wq[0].LoadBitmap(IDB_BITMAP1);
 	wq[1].LoadBitmap(IDB_BITMAP4);
 
 	wchar_t w[140];
 
-	bh->Create(L"start",BS_BITMAP|WS_CHILD|WS_VISIBLE,CRect(50,50,170,100),this,2133);
+	bh->Create(L"start",BS_BITMAP|WS_CHILD|WS_VISIBLE|WS_DISABLED,CRect(50,50,170,100),this,2133);
 	bh->SetBitmap(wq[0]);
 	q->Create(L"stop",BS_BITMAP|WS_CHILD|WS_VISIBLE|WS_DISABLED,CRect(50+170,50,170+170,100),this,233);
 	q->SetBitmap(wq[1]);
 	b7[0]->Create(L"to go :",WS_CHILD|WS_VISIBLE|SS_WHITEFRAME|SS_SIMPLE,CRect(3,290,473,320),this);
 	b7[1]->Create(L"to go :",WS_CHILD|WS_VISIBLE|SS_WHITEFRAME|SS_SIMPLE,CRect(3,290-70,473,320-70),this);
 	b7[2]->Create(L"to go :",WS_CHILD|WS_VISIBLE|SS_WHITEFRAME|SS_SIMPLE,CRect(3,290-35,473,320-35),this);
-	 hc=CreateWindowEx(WS_EX_NOPARENTNOTIFY, MSFTEDIT_CLASS,NULL, 
+	finA->Create(L"init",BS_TEXT|WS_CHILD|WS_VISIBLE,CRect(0+280,20+292,59+280,48+292),this,2233);
+	hc=CreateWindowEx(WS_EX_NOPARENTNOTIFY, MSFTEDIT_CLASS,NULL, 
 		ES_MULTILINE|ES_AUTOVSCROLL| WS_VISIBLE | WS_CHILD |WS_TABSTOP|WS_VSCROLL, 
         1, 350, 450, 201, this->m_hWnd, NULL, h, NULL);
 	HFONT newFont = CreateFont(22, 0, 0, 0,0 , FALSE, FALSE, FALSE, DEFAULT_CHARSET,
@@ -170,14 +176,17 @@ VOID c(VOID *x)
 	SETTEXTEX fw;
 	fw.flags=4;
 	fw.codepage=1200;
-    	Transaction *transaction;
+	
+   	Transaction *transaction;
 	unsigned char hash1[32];
 	uint32_t timestamp_len = 0, scriptSig_len = 0, pubkey_len = 0, pubkeyScript_len = 0;
 	    
-	pubkey_len = strlen(pubkey) / 2; // One byte is represented as two hex characters, thus we divide by two to get real length.
-	timestamp_len = strlen(timestamp);
+	pubkey_len = wcslen(mount_tx->m_pubkey) / 2; // One byte is represented as two hex characters, thus we divide by two to get real length.
+	timestamp_len = wcslen(mount_tx->m_timestamp);
+	CW2A timestamp((LPCWSTR)mount_tx->m_timestamp);
+	CW2A pubkey((LPCWSTR)mount_tx->m_pubkey);
 
-	transaction = InitTransaction();
+ 	transaction = InitTransaction();
 	scriptSig_len = timestamp_len;
 
 	// Encode pubkey to binary and prepend pubkey size, then append the OP_CHECKSIG byte	
@@ -193,27 +202,27 @@ VOID c(VOID *x)
 	
 	
 	// This is basically how I believe the size of the nBits is calculated
-	if	(nBits < 0x100)
+	if	(mount_tx->m_nb < 0x100)
 	{
 		transaction->scriptSig[scriptSig_pos++] = 0x01;
-		transaction->scriptSig[scriptSig_pos++] = (uint8_t)nBits;
+		transaction->scriptSig[scriptSig_pos++] = (uint8_t)mount_tx->m_nb;
 	}
-	else  if(nBits < 0x10000)
+	else  if(mount_tx->m_nb < 0x10000)
 	{
 		transaction->scriptSig[scriptSig_pos++] = 0x02;
-		memcpy(transaction->scriptSig+scriptSig_pos, &nBits, 2);
+		memcpy(transaction->scriptSig+scriptSig_pos, &mount_tx->m_nb, 2);
 		scriptSig_pos+=2;
 	}	
-	else  if(nBits < 0x1000000)
+	else  if(mount_tx->m_nb < 0x1000000)
 	{
 		transaction->scriptSig[scriptSig_pos++] = 0x03;
-		memcpy(transaction->scriptSig+scriptSig_pos, &nBits, 3);
+		memcpy(transaction->scriptSig+scriptSig_pos, &mount_tx->m_nb, 3);
 		scriptSig_pos+=3;
 	}
-	else //else if(nBits < 4294967296LL)
+	else //else if(mount_tx->m_nb < 4294967296)
 	{
 		transaction->scriptSig[scriptSig_pos++] = 0x04;
-		memcpy(transaction->scriptSig+scriptSig_pos, &nBits, 4);
+		memcpy(transaction->scriptSig+scriptSig_pos, &mount_tx->m_nb, 4);
 		scriptSig_pos+=4;
 	}
 	//below  works only if structure alignment turned off .
@@ -224,12 +233,10 @@ VOID c(VOID *x)
 	// It should essentially mean PUSH 1 byte on the stack which in this case is 0x04 or just 4
 	transaction->scriptSig[scriptSig_pos++] = 0x01;
 	transaction->scriptSig[scriptSig_pos++] = 0x04;
-	
 	transaction->scriptSig[scriptSig_pos++] = (uint8_t)scriptSig_len; 
-	
 	scriptSig_len += scriptSig_pos;
 	transaction->scriptSig = (uint8_t*)realloc(transaction->scriptSig, scriptSig_len);
-	memcpy(transaction->scriptSig+scriptSig_pos, (const unsigned char *)timestamp, timestamp_len);
+	memcpy(transaction->scriptSig+scriptSig_pos, timestamp, timestamp_len);
 	
 	uint32_t serializedLen = 
 	4    // tx version  
@@ -281,7 +288,7 @@ VOID c(VOID *x)
 	PostMessage(hc, WM_VSCROLL, SB_BOTTOM, 0);					                   
 	
 		unsigned char  block_hash1[32];
-		blockheader block_header={/* drift */ 1 , {} , {} , unixtime == 0 ? time(NULL) + c : unixtime + c,  nBits , startNonce };
+		blockheader block_header={/* drift */ 1 , {} , {} , mount_tx->m_ut == 0 ? time(NULL) + c : mount_tx->m_ut + c,   mount_tx->m_nb , mount_tx->m_nonce };
 		blockhash block_hashf;
 		unsigned char* block_headerp=(unsigned char*)&block_header;
 		unsigned char* block_hashfp=(unsigned char*)&block_hashf;
@@ -377,7 +384,8 @@ void CMainFrame::OnDestroy()
 	delete b7[1];
 	delete b7[2];
 //	delete rew;
-
+	delete finA;
+	if(mount_tx) delete mount_tx;
 	// TODO: Add your message handler code here
 }
 
@@ -407,3 +415,11 @@ void CMainFrame::OnClose()
 	}
 }
 
+void CMainFrame::uw()
+{
+	mount_tx=new mount(NULL);
+	int c=mount_tx->DoModal();
+	if(c!=IDOK) { delete mount_tx ; mount_tx = NULL; bh->EnableWindow(0); return;}
+	bh->EnableWindow();
+	
+}
