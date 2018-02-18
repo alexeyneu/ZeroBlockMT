@@ -162,13 +162,14 @@ Transaction *InitTransaction()
 
 
 int bren=5;
-int cr,f,b,terminator;
+int b,terminator;
 
 VOID c(VOID *x)
 {	
     const byte c=(byte)x; 
     q->EnableWindow();
     bh->EnableWindow(0);
+    
     CWin32Heap stringHeap(HEAP_NO_SERIALIZE, 0, 0);
     CAtlStringMgr M(&stringHeap);
     CString t(&M), bear(&M);

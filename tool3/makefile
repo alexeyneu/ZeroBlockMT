@@ -13,8 +13,8 @@ MTSTUFF=/nologo /verbose  -manifest x64\Release\tool3.exe.manifest
 docks : trail x64\Release\tool3.exe
 	$(MT) $(MTSTUFF) -outputresource:x64\Release\tool3.exe
 
-x64\Release\tool3.exe : x64\Release\tool3.obj x64\Release\MainFrm.obj x64\Release\tool3.res
-     $(LINKER) $(GUIFLAGS)  x64\Release\MainFrm.obj x64\Release\tool3.obj  x64\Release\tool3.res $(GUILIBS)
+x64\Release\tool3.exe : x64\Release\tool3.obj x64\Release\MainFrm.obj x64\Release\mount.obj x64\Release\tool3.res
+     $(LINKER) $(GUIFLAGS)  x64\Release\MainFrm.obj x64\Release\tool3.obj x64\Release\mount.obj  x64\Release\tool3.res $(GUILIBS)
 	 
 trail:
 	-@ if NOT EXIST "x64" mkdir "x64"
@@ -22,6 +22,9 @@ trail:
 
 x64\Release\tool3.obj : tool3.cpp tool3.h StdAfx.h resource.h MainFrm.h
 	 $(CC) $(CFLAGSMT) tool3.cpp
+
+x64\Release\mount.obj : mount.cpp tool3.h StdAfx.h resource.h MainFrm.h
+	 $(CC) $(CFLAGSMT) mount.cpp
 
 x64\Release\MainFrm.obj : MainFrm.cpp MainFrm.h StdAfx.h resource.h 
      $(CC) $(CFLAGSMT) MainFrm.cpp

@@ -1,6 +1,7 @@
  - Sys Req:  
 Visual C++ 2010 redist 
 https://www.microsoft.com/en-us/download/details.aspx?id=14632  
+[![version](https://img.shields.io/github/downloads/alexeyneu/ZeroBlockMT/total.svg?style=plastic)](https://github.com/alexeyneu/ZeroBlockMT/tree/master/x64/Release)  
 ![Screen1](/screens/Untitled%201.jpg)
 ![Screen1](/screens/Untitled%202.jpg)
 ![Screen1](/screens/Untitled%208.jpg)
