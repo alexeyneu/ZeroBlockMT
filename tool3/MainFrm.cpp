@@ -194,7 +194,7 @@ VOID c(VOID *x)
 	pubkeyScript_len =pubkey_len+2;
 	transaction->pubkeyScript =(uint8_t *)malloc(pubkeyScript_len);
 	transaction->pubkeyScript[0] = 0x41; //   A public key is 32 bytes X coordinate, 32 bytes Y coordinate and one byte 0x04, so 65 bytes i.e 0x41 in Hex.
-	hex2bin(transaction->pubkeyScript+1, pubkey, pubkey_len); // No error checking, yeah.
+	hex2bin(transaction->pubkeyScript+1, pubkey, pubkey_len); // No error checking, yeah.   
 	transaction->pubkeyScript[pubkeyScript_len - 1] = OP_CHECKSIG;
 	
 	// Encode timestamp to binary
@@ -226,8 +226,7 @@ VOID c(VOID *x)
 		memcpy(transaction->scriptSig+scriptSig_pos, &mount_tx->m_nb, 4);
 		scriptSig_pos+=4;
 	}
-	//below  works only if structure alignment turned off .
-
+	
 	// In the Bitcoin code there is a statement 'CBigNum(4)' 
 	// i've been wondering for a while what it is but
 	// seeing as alt-coins keep it the same, we'll do it here as well
@@ -271,7 +270,7 @@ VOID c(VOID *x)
 	memcpy(transaction->serializedData+serializedData_pos, transaction->pubkeyScript, pubkeyScript_len);
 	serializedData_pos += pubkeyScript_len;
 	memcpy(transaction->serializedData+serializedData_pos, &transaction->locktime, 4);
-	serializedData_pos += 4;	
+	
 	
 	// Now that the data is serialized
 	// we hash it with SHA256 and then hash that result to get merkle hash
