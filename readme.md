@@ -9,7 +9,7 @@ https://www.microsoft.com/en-us/download/details.aspx?id=14632
  mines block that starts blockchain.  
 where are these tools were used?  
 https://github.com/DMDcoin/Diamond/blob/a1a7f6b8a3bad0df8fd8ddb9ead0347b1fa440f4/src/chainparams.cpp#L125  
-i.e.
+i.e. .One used there is not mine.
 ## build:  
 Req: `.lib` out of openssl build 
   
