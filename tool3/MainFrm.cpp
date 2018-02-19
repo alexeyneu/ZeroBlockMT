@@ -137,30 +137,6 @@ size_t hex2bin(unsigned char *p /* out */, const char *hexstr, size_t len)
 	return  (wlen == 0)*len;     // zero if error .had enough 
 }
 
-
-Transaction *InitTransaction()
-{
-	Transaction *transaction;
-	
-	transaction = (Transaction *)calloc(1, sizeof(*transaction));
-	// Set some initial data that will remain constant throughout the program
-	transaction->version = /* drift */ 1;
-	transaction->numInputs = 1;
-	transaction->numOutputs = 1;
-	transaction->locktime = 0;
-	transaction->prevoutIndex = 0xFFFFFFFF;
-	transaction->sequence = 0xFFFFFFFF;
-	transaction->outValue = 50*COIN;
-	
-	// We initialize the previous output to 0 as there is none
-	
-	return transaction;
-}
-
-
-
-
-
 int bren=5;
 int b,terminator;
 
@@ -178,7 +154,6 @@ VOID c(VOID *x)
 	fw.flags=4;
 	fw.codepage=1200;
 	
-   	Transaction *transaction;
 	unsigned char hash1[32];
 	uint32_t timestamp_len = 0, scriptSig_len = 0, pubkey_len = 0, pubkeyScript_len = 0;
 	    
@@ -187,43 +162,43 @@ VOID c(VOID *x)
 	CW2A timestamp((LPCWSTR)mount_tx->m_timestamp);
 	CW2A pubkey((LPCWSTR)mount_tx->m_pubkey);
 
- 	transaction = InitTransaction();
+ 	Transaction transaction={ {},0 ,/* drift */1 ,1 , {},0xFFFFFFFF ,0 ,0xFFFFFFFF ,1 ,50*COIN ,0 ,0 };
 	scriptSig_len = timestamp_len;
 
 	// Encode pubkey to binary and prepend pubkey size, then append the OP_CHECKSIG byte	
 	pubkeyScript_len =pubkey_len+2;
-	transaction->pubkeyScript =(uint8_t *)malloc(pubkeyScript_len);
-	transaction->pubkeyScript[0] = 0x41; //   A public key is 32 bytes X coordinate, 32 bytes Y coordinate and one byte 0x04, so 65 bytes i.e 0x41 in Hex.
-	hex2bin(transaction->pubkeyScript+1, pubkey, pubkey_len); // No error checking, yeah.   
-	transaction->pubkeyScript[pubkeyScript_len - 1] = OP_CHECKSIG;
+	transaction.pubkeyScript =(uint8_t *)malloc(pubkeyScript_len);
+	transaction.pubkeyScript[0] = 0x41; //   A public key is 32 bytes X coordinate, 32 bytes Y coordinate and one byte 0x04, so 65 bytes i.e 0x41 in Hex.
+	hex2bin(transaction.pubkeyScript+1, pubkey, pubkey_len); // No error checking, yeah.   
+	transaction.pubkeyScript[pubkeyScript_len - 1] = OP_CHECKSIG;
 	
 	// Encode timestamp to binary
-	transaction->scriptSig =(uint8_t *) malloc(scriptSig_len);
+	transaction.scriptSig =(uint8_t *) malloc(scriptSig_len);
 	uint32_t scriptSig_pos = 0;
 	
 	
 	// This is basically how I believe the size of the nBits is calculated
 	if	(mount_tx->m_nb < 0x100)
 	{
-		transaction->scriptSig[scriptSig_pos++] = 0x01;
-		transaction->scriptSig[scriptSig_pos++] = (uint8_t)mount_tx->m_nb;
+		transaction.scriptSig[scriptSig_pos++] = 0x01;
+		transaction.scriptSig[scriptSig_pos++] = (uint8_t)mount_tx->m_nb;
 	}
 	else  if(mount_tx->m_nb < 0x10000)
 	{
-		transaction->scriptSig[scriptSig_pos++] = 0x02;
-		memcpy(transaction->scriptSig+scriptSig_pos, &mount_tx->m_nb, 2);
+		transaction.scriptSig[scriptSig_pos++] = 0x02;
+		memcpy(transaction.scriptSig+scriptSig_pos, &mount_tx->m_nb, 2);
 		scriptSig_pos+=2;
 	}	
 	else  if(mount_tx->m_nb < 0x1000000)
 	{
-		transaction->scriptSig[scriptSig_pos++] = 0x03;
-		memcpy(transaction->scriptSig+scriptSig_pos, &mount_tx->m_nb, 3);
+		transaction.scriptSig[scriptSig_pos++] = 0x03;
+		memcpy(transaction.scriptSig+scriptSig_pos, &mount_tx->m_nb, 3);
 		scriptSig_pos+=3;
 	}
 	else //else if(mount_tx->m_nb < 4294967296)
 	{
-		transaction->scriptSig[scriptSig_pos++] = 0x04;
-		memcpy(transaction->scriptSig+scriptSig_pos, &mount_tx->m_nb, 4);
+		transaction.scriptSig[scriptSig_pos++] = 0x04;
+		memcpy(transaction.scriptSig+scriptSig_pos, &mount_tx->m_nb, 4);
 		scriptSig_pos+=4;
 	}
 	
@@ -231,12 +206,12 @@ VOID c(VOID *x)
 	// i've been wondering for a while what it is but
 	// seeing as alt-coins keep it the same, we'll do it here as well
 	// It should essentially mean PUSH 1 byte on the stack which in this case is 0x04 or just 4
-	transaction->scriptSig[scriptSig_pos++] = 0x01;
-	transaction->scriptSig[scriptSig_pos++] = 0x04;
-	transaction->scriptSig[scriptSig_pos++] = (uint8_t)scriptSig_len; 
+	transaction.scriptSig[scriptSig_pos++] = 0x01;
+	transaction.scriptSig[scriptSig_pos++] = 0x04;
+	transaction.scriptSig[scriptSig_pos++] = (uint8_t)scriptSig_len; 
 	scriptSig_len += scriptSig_pos;
-	transaction->scriptSig = (uint8_t*)realloc(transaction->scriptSig, scriptSig_len);
-	memcpy(transaction->scriptSig+scriptSig_pos, timestamp, timestamp_len);
+	transaction.scriptSig = (uint8_t*)realloc(transaction.scriptSig, scriptSig_len);
+	memcpy(transaction.scriptSig+scriptSig_pos, timestamp, timestamp_len);
 	
 	uint32_t serializedLen = 
 	4    // tx version  
@@ -254,34 +229,34 @@ VOID c(VOID *x)
 	
 	// Now let's serialize the data
 	uint32_t serializedData_pos = 0;
-	transaction->serializedData = (uint8_t *)malloc(serializedLen);
-	memcpy(transaction->serializedData, &transaction->version, 41/* 4 + 1 + 32 + 4 */);  
+	transaction.serializedData = (uint8_t *)malloc(serializedLen);
+	memcpy(transaction.serializedData, &transaction.version, 41/* 4 + 1 + 32 + 4 */);  
 	/* fo' sho' */
 //	std::cout << offsetof(Transaction,prevoutIndex) + sizeof(uint32_t) - offsetof(Transaction,version);	
 	serializedData_pos += 41; 
-	memcpy(transaction->serializedData+serializedData_pos, &scriptSig_len, 1);
+	memcpy(transaction.serializedData+serializedData_pos, &scriptSig_len, 1);
 	serializedData_pos += 1;
-	memcpy(transaction->serializedData+serializedData_pos, transaction->scriptSig, scriptSig_len);
+	memcpy(transaction.serializedData+serializedData_pos, transaction.scriptSig, scriptSig_len);
 	serializedData_pos += scriptSig_len;
-	memcpy(transaction->serializedData+serializedData_pos, &transaction->sequence, 13/* 4 + 1 + 8 */);
+	memcpy(transaction.serializedData+serializedData_pos, &transaction.sequence, 13/* 4 + 1 + 8 */);
 	serializedData_pos += 13;
-	memcpy(transaction->serializedData+serializedData_pos, &pubkeyScript_len, 1);
+	memcpy(transaction.serializedData+serializedData_pos, &pubkeyScript_len, 1);
 	serializedData_pos += 1;
-	memcpy(transaction->serializedData+serializedData_pos, transaction->pubkeyScript, pubkeyScript_len);
+	memcpy(transaction.serializedData+serializedData_pos, transaction.pubkeyScript, pubkeyScript_len);
 	serializedData_pos += pubkeyScript_len;
-	memcpy(transaction->serializedData+serializedData_pos, &transaction->locktime, 4);
+	memcpy(transaction.serializedData+serializedData_pos, &transaction.locktime, 4);
 	
 	
 	// Now that the data is serialized
 	// we hash it with SHA256 and then hash that result to get merkle hash
-	SHA256(transaction->serializedData, serializedLen, hash1);
-	SHA256(hash1, 32, transaction->merkleHash);
+	SHA256(transaction.serializedData, serializedLen, hash1);
+	SHA256(hash1, 32, transaction.merkleHash);
 	
-	char *merkleHash = bin2hex(transaction->merkleHash, 32);
-	byteswap(transaction->merkleHash, 32); 
-	char *merkleHashSwapped = bin2hex(transaction->merkleHash, 32);
-	char *txScriptSig = bin2hex(transaction->scriptSig, scriptSig_len);
-	char *pubScriptSig = bin2hex(transaction->pubkeyScript, pubkeyScript_len);
+	char *merkleHash = bin2hex(transaction.merkleHash, 32);
+	byteswap(transaction.merkleHash, 32); 
+	char *merkleHashSwapped = bin2hex(transaction.merkleHash, 32);
+	char *txScriptSig = bin2hex(transaction.scriptSig, scriptSig_len);
+	char *pubScriptSig = bin2hex(transaction.pubkeyScript, pubkeyScript_len);
 	t.Format(L"\nCoinbase: %S\n\nPubkeyScript: %S\n\nMerkle Hash: %S\nByteswapped: %S\n",txScriptSig, pubScriptSig, merkleHash, merkleHashSwapped);
 	bear=bear+t+L"Generating block...\n\n";
 	SendMessage(hc,EM_SETTEXTEX,(WPARAM)&fw,(LPARAM)(LPCWSTR)bear);
@@ -292,8 +267,8 @@ VOID c(VOID *x)
 		blockhash block_hashf;
 		unsigned char* block_headerp=(unsigned char*)&block_header;
 		unsigned char* block_hashfp=(unsigned char*)&block_hashf;
-		byteswap(transaction->merkleHash, 32); // We swapped it before, so do it again now.
-		memcpy(&block_header.merk, transaction->merkleHash, 32);
+		byteswap(transaction.merkleHash, 32); // We swapped it before, so do it again now.
+		memcpy(&block_header.merk, transaction.merkleHash, 32);
 		unsigned int counter=0, start = time(NULL);
 		std::wstringstream w;
 		std::ios_base::iostate xh=0;
@@ -345,10 +320,9 @@ VOID c(VOID *x)
 	free(merkleHashSwapped);
 	free(txScriptSig);
 	free(pubScriptSig);
-	free(transaction->serializedData);
-	free(transaction->scriptSig);
-	free(transaction->pubkeyScript);
-	free(transaction);
+	free(transaction.serializedData);
+	free(transaction.scriptSig);
+	free(transaction.pubkeyScript);
 	    bren = 5;
 	    break;
 	}
