@@ -304,7 +304,7 @@ VOID c(VOID *x)
 			{
 				block_header.unixtime=block_header.unixtime + 3;//trick is that to change pre-start time to find a block(really it's smth else) faster then nonce wraps
 			}
-			block_header.startNonce++;	//see what happens on overflow
+			block_header.startNonce++;	//see what happens on boundary
 			counter++;
 		}
 	
