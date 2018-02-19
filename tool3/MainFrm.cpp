@@ -290,8 +290,6 @@ VOID c(VOID *x)
 				b=9;
 			}
 			
-			
-			counter++;
 			if(time(NULL)-start > 0)
 			{
 				w<<std::setw(7)<< counter<<L" Hashes/s, Nonce "<< std::setw(10.10)<< block_header.startNonce;
@@ -302,12 +300,12 @@ VOID c(VOID *x)
 				w.str(L"");
 			}
 			
-
 			if(block_header.startNonce == 0x100000000 - 1)
 			{
 				block_header.unixtime=block_header.unixtime + 3;//trick is that to change pre-start time to find a block(really it's smth else) faster then nonce wraps
 			}
-			block_header.startNonce++;
+			block_header.startNonce++;	//see what happens on overflow
+			counter++;
 		}
 	
 	if (b) {
