@@ -173,9 +173,11 @@ VOID c(VOID *x)
 	transaction.pubkeyScript[pubkeyScript_len - 1] = OP_CHECKSIG;
 	
 	// Encode timestamp to binary
-	transaction.scriptSig =(uint8_t *) malloc(scriptSig_len);
+	transaction.scriptSig =(uint8_t *) malloc(8); //max size of first part
 	uint32_t scriptSig_pos = 0;
 	
+	/*  nbits related stuff , first is real size of value in bytes , next is value with 
+	   null bytes on the left removed  */
 	short pl;
 	transaction.scriptSig[scriptSig_pos++] = pl = 0x01+((mount_tx->m_nb >> 8)>0)+((mount_tx->m_nb >> 16)>0)+((mount_tx->m_nb >> 24)>0);	    // statement (smth > 0) returns 0 or 1
 	memcpy(transaction.scriptSig + scriptSig_pos, &mount_tx->m_nb, pl);
