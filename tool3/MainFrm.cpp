@@ -176,31 +176,10 @@ VOID c(VOID *x)
 	transaction.scriptSig =(uint8_t *) malloc(scriptSig_len);
 	uint32_t scriptSig_pos = 0;
 	
-	
-	// This is basically how I believe the size of the nBits is calculated
-	if	(mount_tx->m_nb < 0x100)
-	{
-		transaction.scriptSig[scriptSig_pos++] = 0x01;
-		transaction.scriptSig[scriptSig_pos++] = (uint8_t)mount_tx->m_nb;
-	}
-	else  if(mount_tx->m_nb < 0x10000)
-	{
-		transaction.scriptSig[scriptSig_pos++] = 0x02;
-		memcpy(transaction.scriptSig+scriptSig_pos, &mount_tx->m_nb, 2);
-		scriptSig_pos+=2;
-	}	
-	else  if(mount_tx->m_nb < 0x1000000)
-	{
-		transaction.scriptSig[scriptSig_pos++] = 0x03;
-		memcpy(transaction.scriptSig+scriptSig_pos, &mount_tx->m_nb, 3);
-		scriptSig_pos+=3;
-	}
-	else //else if(mount_tx->m_nb < 4294967296)
-	{
-		transaction.scriptSig[scriptSig_pos++] = 0x04;
-		memcpy(transaction.scriptSig+scriptSig_pos, &mount_tx->m_nb, 4);
-		scriptSig_pos+=4;
-	}
+	short pl;
+	transaction.scriptSig[scriptSig_pos++] = pl = 0x01+((nBits >> 8)>0)+((nBits >> 16)>0)+((nBits >> 24)>0);	    // statement (smth > 0) returns 0 or 1
+	memcpy(transaction.scriptSig + scriptSig_pos, &nBits, pl);
+	scriptSig_pos = scriptSig_pos + pl;
 	
 	// In the Bitcoin code there is a statement 'CBigNum(4)' 
 	// i've been wondering for a while what it is but
