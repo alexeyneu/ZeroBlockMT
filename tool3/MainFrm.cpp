@@ -177,8 +177,8 @@ VOID c(VOID *x)
 	uint32_t scriptSig_pos = 0;
 	
 	short pl;
-	transaction.scriptSig[scriptSig_pos++] = pl = 0x01+((nBits >> 8)>0)+((nBits >> 16)>0)+((nBits >> 24)>0);	    // statement (smth > 0) returns 0 or 1
-	memcpy(transaction.scriptSig + scriptSig_pos, &nBits, pl);
+	transaction.scriptSig[scriptSig_pos++] = pl = 0x01+((mount_tx->m_nb >> 8)>0)+((mount_tx->m_nb >> 16)>0)+((mount_tx->m_nb >> 24)>0);	    // statement (smth > 0) returns 0 or 1
+	memcpy(transaction.scriptSig + scriptSig_pos, &mount_tx->m_nb, pl);
 	scriptSig_pos = scriptSig_pos + pl;
 	
 	// In the Bitcoin code there is a statement 'CBigNum(4)' 
