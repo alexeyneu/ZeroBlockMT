@@ -25,16 +25,6 @@ mount::~mount()
 {
 }
 
-void mount::OnFinalRelease()
-
-{
-	// When the last reference for an automation object is released
-	// OnFinalRelease is called.  The base class will automatically
-	// deletes the object.  Add additional cleanup required for your
-	// object before calling the base class.
-
-	CDialogEx::OnFinalRelease();
-}
 
 void mount::DoDataExchange(CDataExchange* pDX)
 {
@@ -59,12 +49,3 @@ void mount::OnBnClickedButton1()
 	this->OnOK();
 }
 
-	BOOL mount::OnInitDialog()
-{
-	CDialogEx::OnInitDialog();
-
-	UpdateData(0);
-
-	return TRUE;  // return TRUE unless you set the focus to a control
-	// EXCEPTION: OCX Property Pages should return FALSE
-}

@@ -11,8 +11,6 @@ public:
 	mount(CWnd* pParent = NULL);   // standard constructor
 	virtual ~mount();
 
-	virtual void OnFinalRelease();
-
 // Dialog Data
 	enum { IDD = IDD_DIALOGBAR };
 
@@ -27,5 +25,4 @@ public:
 	UINT m_nb;
 	CString m_timestamp;
 	CString m_pubkey;
-	virtual BOOL OnInitDialog();
 };
