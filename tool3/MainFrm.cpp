@@ -368,8 +368,20 @@ void CMainFrame::OnClose()
 
 void CMainFrame::uw()
 {
-	mount_tx=new mount(NULL);
+	mount *mount_txn=NULL;
+	if(mount_tx) mount_txn=mount_tx;
+	mount_tx=new mount();
+	if(mount_txn)
+	{
+		mount_tx->m_nb=mount_txn->m_nb;
+		mount_tx->m_nonce=mount_txn->m_nonce;
+		mount_tx->m_pubkey=mount_txn->m_pubkey;
+		mount_tx->m_timestamp=mount_txn->m_timestamp;
+		mount_tx->m_ut=mount_txn->m_ut;
+		delete mount_txn;
+	}
 	int c=mount_tx->DoModal();
+	
 	if(c!=IDOK) { delete mount_tx ; mount_tx = NULL; bh->EnableWindow(0); return;}
 	bh->EnableWindow();
 	

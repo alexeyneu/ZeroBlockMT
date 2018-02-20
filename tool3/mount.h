@@ -27,4 +27,5 @@ public:
 	UINT m_nb;
 	CString m_timestamp;
 	CString m_pubkey;
+	virtual BOOL OnInitDialog();
 };

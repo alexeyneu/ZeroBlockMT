@@ -26,6 +26,7 @@ mount::~mount()
 }
 
 void mount::OnFinalRelease()
+
 {
 	// When the last reference for an automation object is released
 	// OnFinalRelease is called.  The base class will automatically
@@ -56,4 +57,14 @@ END_MESSAGE_MAP()
 void mount::OnBnClickedButton1()
 {
 	this->OnOK();
+}
+
+	BOOL mount::OnInitDialog()
+{
+	CDialogEx::OnInitDialog();
+
+	UpdateData(0);
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+	// EXCEPTION: OCX Property Pages should return FALSE
 }

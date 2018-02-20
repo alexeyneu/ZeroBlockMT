@@ -11,8 +11,6 @@
 #pragma once
 const uint64_t CENT = 1000000;
 const uint64_t COIN = 100000000;
-
-
 const uint32_t OP_CHECKSIG = 172; // This is expressed as 0xAC
 
 
