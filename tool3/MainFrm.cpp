@@ -9,6 +9,7 @@
 #include "MainFrm.h"
 #include <openssl/sha.h>
 #include <iomanip>
+
 #include "mount.h"
 
 #ifdef _DEBUG
@@ -103,10 +104,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 0;
 }
 
-void byteswap(uint8_t *buf, int length)
-{
-	std::reverse(buf, buf +  length); 
-}
 
 // Following function is borrowed from cgminer.
 char *bin2hex(const unsigned char *p, size_t len)
@@ -234,7 +231,7 @@ VOID c(VOID *x)
 	SHA256(hash1, 32, transaction.merkleHash);
 	
 	char *merkleHash = bin2hex(transaction.merkleHash, 32);
-	byteswap(transaction.merkleHash, 32); 
+	std::reverse(transaction.merkleHash,transaction.merkleHash + 32); 
 	char *merkleHashSwapped = bin2hex(transaction.merkleHash, 32);
 	char *txScriptSig = bin2hex(transaction.scriptSig, scriptSig_len);
 	char *pubScriptSig = bin2hex(transaction.pubkeyScript, pubkeyScript_len);
@@ -248,7 +245,7 @@ VOID c(VOID *x)
 		blockhash block_hashf;
 		unsigned char* block_headerp=(unsigned char*)&block_header;
 		unsigned char* block_hashfp=(unsigned char*)&block_hashf;
-		byteswap(transaction.merkleHash, 32); // We swapped it before, so do it again now.
+		std::reverse(transaction.merkleHash,transaction.merkleHash + 32); 
 		memcpy(&block_header.merk, transaction.merkleHash, 32);
 		unsigned int counter=0, start = time(NULL);
 		std::wstringstream w;
@@ -261,7 +258,7 @@ VOID c(VOID *x)
 			 // The hash is in little-endian, so we check the last 4 bytes.
 			if(block_hashf.checkbytes == 0) // { .. , 0x00, 0x00, 0x00, 0x00 }
 			{
-				byteswap(block_hashfp, 32);
+				std::reverse(block_hashfp,block_hashfp +32);
 				char *blockHash = bin2hex(block_hashfp, 32);
 				t.Format(L"\nBlock found!\nHash: %S\nNonce: %u\nUnix time: %u\n", blockHash, block_header.startNonce, block_header.unixtime);
 				bear=bear+t;
