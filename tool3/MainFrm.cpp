@@ -39,21 +39,8 @@ CMainFrame::CMainFrame()
 CMainFrame::~CMainFrame()
 {
 }
-
-
-// CMainFrame diagnostics
-
-#ifdef _DEBUG
-
-
-
-#endif //_DEBUG
-
-
 // CMainFrame message handlers
-
 mount *mount_tx;
-
 HWND hc,hz;
 CButton *bh;
 CButton *q;
@@ -68,17 +55,14 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
 	bh=new CButton();
-
 	b7[0]=new CStatic();
 	b7[1]=new CStatic();
 	b7[2]=new CStatic();
 	q=new CButton();
 	CBitmap wq[2];
 	finA=new CButton();
-
 	wq[0].LoadBitmap(IDB_BITMAP1);
 	wq[1].LoadBitmap(IDB_BITMAP4);
-
 	wchar_t w[140];
 
 	bh->Create(L"start",BS_BITMAP|WS_CHILD|WS_VISIBLE|WS_DISABLED,CRect(50,50,170,100),this,2133);
@@ -104,27 +88,18 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 0;
 }
 
-
-// Following function is borrowed from cgminer.
-char *bin2hex(const unsigned char *p, size_t len)
+const	std::wstring bin2hex(const unsigned char *p, size_t len)
 {
-	char *s = (char *)malloc((len * 2) + 1);
-	unsigned int i;
-
-	if (!s)
-		return NULL;
-
-	for (i = 0; i < len; i++)
-		sprintf(s + (i * 2), "%02x", (unsigned int) p[i]);
-
-	return s;
+	std::wstringstream f;
+	f<< std::hex << std::setfill(L'0');
+	for (int i = 0; i < len; i++)
+		f << std::setw(2) << (int)p[i];
+	return f.str();
 }
-
 
 size_t hex2bin(unsigned char *p /* out */, const char *hexstr, size_t len)
 {
 	size_t wlen = len;
-
 	while (wlen && *hexstr && *(hexstr+1))    //last condition cause np if check fails on middle one.thats coz of short-circuit evaluation
         {
 		len*=sscanf(hexstr, "%2hhx",p++);   // 0 or 1 (maybe smth else too) . Slow stuff , np  		
@@ -145,7 +120,9 @@ VOID c(VOID *x)
     
     CWin32Heap stringHeap(HEAP_NO_SERIALIZE, 0, 0);
     CAtlStringMgr M(&stringHeap);
-    CString t(&M), bear(&M);
+    CString bear(&M);
+	std::wstringstream t;
+
     SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED | ES_DISPLAY_REQUIRED);
 	SETTEXTEX fw;
 	fw.flags=4;
@@ -180,9 +157,6 @@ VOID c(VOID *x)
 	memcpy(transaction.scriptSig + scriptSig_pos, &mount_tx->m_nb, pl);
 	scriptSig_pos = scriptSig_pos + pl;
 	
-	// In the Bitcoin code there is a statement 'CBigNum(4)' 
-	// i've been wondering for a while what it is but
-	// seeing as alt-coins keep it the same, we'll do it here as well
 	// It should essentially mean PUSH 1 byte on the stack which in this case is 0x04 or just 4
 	transaction.scriptSig[scriptSig_pos++] = 0x01;
 	transaction.scriptSig[scriptSig_pos++] = 0x04;
@@ -224,20 +198,21 @@ VOID c(VOID *x)
 	serializedData_pos += pubkeyScript_len;
 	memcpy(transaction.serializedData+serializedData_pos, &transaction.locktime, 4);
 	
-	
 	// Now that the data is serialized
 	// we hash it with SHA256 and then hash that result to get merkle hash
 	SHA256(transaction.serializedData, serializedLen, hash1);
 	SHA256(hash1, 32, transaction.merkleHash);
 	
-	char *merkleHash = bin2hex(transaction.merkleHash, 32);
-	std::reverse(transaction.merkleHash,transaction.merkleHash + 32); 
-	char *merkleHashSwapped = bin2hex(transaction.merkleHash, 32);
-	char *txScriptSig = bin2hex(transaction.scriptSig, scriptSig_len);
-	char *pubScriptSig = bin2hex(transaction.pubkeyScript, pubkeyScript_len);
-	t.Format(L"\nCoinbase: %S\n\nPubkeyScript: %S\n\nMerkle Hash: %S\nByteswapped: %S\n",txScriptSig, pubScriptSig, merkleHash, merkleHashSwapped);
-	bear=bear+t+L"Generating block...\n\n";
-	SendMessage(hc,EM_SETTEXTEX,(WPARAM)&fw,(LPARAM)(LPCWSTR)bear);
+	std::wstring merkleHash = bin2hex(transaction.merkleHash, 32);
+	std::reverse(transaction.merkleHash,transaction.merkleHash +32); 
+	std::wstring merkleHashSwapped = bin2hex(transaction.merkleHash, 32);
+	std::wstring txScriptSig = bin2hex(transaction.scriptSig, scriptSig_len);
+	std::wstring pubScriptSig = bin2hex(transaction.pubkeyScript, pubkeyScript_len);
+
+	t<<L"Coinbase: "<< txScriptSig <<L"\n\nPubkeyScript: "<<pubScriptSig <<L"\n\nMerkle Hash: "<<merkleHash<<L"\nByteswapped: "<< merkleHashSwapped << std::endl;
+	t<<L"Generating block...\n";
+
+	SendMessage(hc,EM_SETTEXTEX,(WPARAM)&fw,(LPARAM)(LPCWSTR)t.str().c_str());
 	PostMessage(hc, WM_VSCROLL, SB_BOTTOM, 0);					                   
 	
 		unsigned char  block_hash1[32];
@@ -259,12 +234,10 @@ VOID c(VOID *x)
 			if(block_hashf.checkbytes == 0) // { .. , 0x00, 0x00, 0x00, 0x00 }
 			{
 				std::reverse(block_hashfp,block_hashfp +32);
-				char *blockHash = bin2hex(block_hashfp, 32);
-				t.Format(L"\nBlock found!\nHash: %S\nNonce: %u\nUnix time: %u\n", blockHash, block_header.startNonce, block_header.unixtime);
-				bear=bear+t;
-				SendMessage(hc,EM_SETTEXTEX,(WPARAM)&fw,(LPARAM)(LPCWSTR)bear);
+				std::wstring blockHash = bin2hex(block_hashfp, 32);
+				t<<L"\nBlock found!\nHash: " << blockHash  <<L"\nNonce: " << block_header.startNonce << L"\nUnix time: "<< block_header.unixtime << std::endl;
+				SendMessage(hc,EM_SETTEXTEX,(WPARAM)&fw,(LPARAM)(LPCWSTR)t.str().c_str());
 				PostMessage(hc, WM_VSCROLL, SB_BOTTOM, 0);					                   
-				free(blockHash);
 				b=9;
 			}
 			
@@ -282,7 +255,7 @@ VOID c(VOID *x)
 			{
 				block_header.unixtime=block_header.unixtime + 3;//trick is that to change pre-start time to find a block(really it's smth else) faster then nonce wraps
 			}
-			block_header.startNonce++;	//see what happens on boundary
+			block_header.startNonce++;	//see what happens on out-bounds
 			counter++;
 		}
 	
@@ -292,10 +265,6 @@ VOID c(VOID *x)
 	    if (terminator) { PostMessage(hz, WM_CLOSE, NULL, NULL);}
 	    else {	    }
 	    b -= 3;
-	free(merkleHash);
-	free(merkleHashSwapped);
-	free(txScriptSig);
-	free(pubScriptSig);
 	free(transaction.serializedData);
 	free(transaction.scriptSig);
 	free(transaction.pubkeyScript);
@@ -322,9 +291,6 @@ void CMainFrame::w()
 	b=9;
 }
 
-
-
-
 void CMainFrame::OnDestroy()
 {
 	CWnd::OnDestroy();
@@ -336,11 +302,7 @@ void CMainFrame::OnDestroy()
 //	delete rew;
 	delete finA;
 	if(mount_tx) delete mount_tx;
-	// TODO: Add your message handler code here
 }
-
-
-
 
 void CMainFrame::OnClose()
 {
@@ -383,5 +345,4 @@ void CMainFrame::uw()
 	
 	if(c!=IDOK) { delete mount_tx ; mount_tx = NULL; bh->EnableWindow(0); return;}
 	bh->EnableWindow();
-	
 }
