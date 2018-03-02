@@ -99,14 +99,14 @@ const	std::wstring bin2hex(const unsigned char *p, size_t len)
 
 size_t hex2bin(unsigned char *p /* out */, const char *hexstr, size_t len)
 {
-	size_t wlen = len;
-	while (wlen && *hexstr && *(hexstr+1))    //last condition cause np if check fails on middle one.thats coz of short-circuit evaluation
+	size_t wlen = 0;
+	while ((wlen<len) && *hexstr && *(hexstr+1))    //last condition cause np if check fails on middle one.thats coz of short-circuit evaluation
         {
 		len*=sscanf(hexstr, "%2hhx",p++);   // 0 or 1 (maybe smth else too) . Slow stuff , np  		
 		hexstr += 2;
-		wlen--;
+		wlen++;
 	}
-	return  (wlen == 0)*len;     // zero if error .had enough 
+	return  (wlen == len - 1)*len;     // zero if error .had enough 
 }
 
 int bren=5;

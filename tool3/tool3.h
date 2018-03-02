@@ -15,9 +15,7 @@ doesn't need that.same define statements there to ensure that nothing more is in
 second : if structure has alignment you can copy it as block too but it gives nothing in this case.*/
 
 struct Transaction{
-#ifdef _MSC_VER
 #pragma pack(1)
-#endif
 	/* Hash of Tx */
 	uint8_t merkleHash[32];
 	
@@ -41,42 +39,26 @@ struct Transaction{
 	
 	/* Final */
 	uint32_t locktime;
-#ifdef _MSC_VER
 } ;
-#else
-} __attribute__((packed));
-#endif
 
 		//here is POD coz there is no constructors and others
 
 struct blockheader {
-#ifdef _MSC_VER
 #pragma pack(1)
-#endif
 	uint32_t blockversion;
 	unsigned char hashPrevBlock[32];
 	unsigned char merk[32];
 	uint32_t unixtime;
 	uint32_t nBits;
 	uint32_t startNonce;
-#ifdef _MSC_VER
 };
-#else
-} __attribute__((packed));
-#endif
 
 
 struct blockhash {
-#ifdef _MSC_VER
 #pragma pack(1)
-#endif
 	unsigned char bl[28];
 	uint32_t checkbytes;
-#ifdef _MSC_VER
 };
-#else
-} __attribute__((packed));
-#endif
 
 
 // Ctool3App:
