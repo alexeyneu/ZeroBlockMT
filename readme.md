@@ -1,7 +1,7 @@
  - Sys Req:  
 Visual C++ 2010 redist 
-https://www.microsoft.com/en-us/download/details.aspx?id=14632
-openssl
+https://www.microsoft.com/en-us/download/details.aspx?id=14632  
+openssl  
 Req: `.lib` out of openssl build  
   https://github.com/openssl/openssl/tree/master/include  
 https://github.com/pocoproject/openssl/tree/develop/build/win64/bin/release  
