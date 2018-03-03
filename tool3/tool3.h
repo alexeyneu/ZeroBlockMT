@@ -1,47 +1,35 @@
 
 // tool3.h : main header file for the tool3 application
-//
+const uint8_t pubscriptlength = 67; // 2 + 65 ,  if unknown at compile time ... 
+
 #pragma once
 
 #ifndef __AFXWIN_H__
 	#error "include 'stdafx.h' before including this file for PCH"
 #endif
-#include <cstdint>
-
 #include "resource.h"       // main symbols
 
 /*structures to represent all that. defines're there so to make it compatible with hash functions. transaction structure 
 doesn't need that.same define statements there to ensure that nothing more is in memory  so first : it can be copied as memory block wo care (not a big deal) ,
 second : if structure has alignment you can copy it as block too but it gives nothing in this case.*/
 
-struct Transaction{
-#pragma pack(1)
-	/* Hash of Tx */
-	uint8_t merkleHash[32];
-	
-	/* Tx serialization before hashing */
-	uint8_t *serializedData;
-	
-	/* Tx version */
-	uint32_t version;    
-	
-	/* Input */
-	uint8_t numInputs; // Program assumes one input
-	uint8_t prevOutput[32];
-	uint32_t prevoutIndex;
-	uint8_t *scriptSig;
-	uint32_t sequence;
-	
-	/* Output */
-	uint8_t numOutputs; // Program assumes one output
-	uint64_t outValue;
-	uint8_t *pubkeyScript;
-	
-	/* Final */
-	uint32_t locktime;
-} ;
 
-		//here is POD coz there is no constructors and others
+//here are PODs coz there is no constructors and others
+struct Transaction
+{
+	#pragma pack(1)
+	uint8_t merkleHash[32];
+/* +0 */uint32_t version;   
+	uint8_t numInputs; 
+	uint8_t prevOutput[32];
+	uint32_t prevoutIndex; // +41
+/* +0 */uint32_t sequence;
+	uint8_t numOutputs; 
+	uint64_t outValue; 
+	uint8_t pubscriptlength;
+	uint8_t pubkeyScript[::pubscriptlength];
+	uint32_t locktime;   // +85
+} ;
 
 struct blockheader {
 #pragma pack(1)

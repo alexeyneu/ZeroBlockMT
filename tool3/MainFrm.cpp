@@ -63,7 +63,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	finA=new CButton();
 	wq[0].LoadBitmap(IDB_BITMAP1);
 	wq[1].LoadBitmap(IDB_BITMAP4);
-	wchar_t w[140];
 
 	bh->Create(L"start",BS_BITMAP|WS_CHILD|WS_VISIBLE|WS_DISABLED,CRect(50,50,170,100),this,2133);
 	bh->SetBitmap(wq[0]);
@@ -90,14 +89,14 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 const	std::wstring bin2hex(const unsigned char *p, size_t len)
 {
-	std::wstringstream f;
+	std::wstringstream f; 
 	f<< std::hex << std::setfill(L'0');
 	for (int i = 0; i < len; i++)
 		f << std::setw(2) << (int)p[i];
 	return f.str();
 }
 
-size_t hex2bin(unsigned char *p /* out */, const char *hexstr, size_t len)
+size_t hex2bin(unsigned char *p , const char *hexstr, size_t len)
 {
 	size_t wlen = 0;
 	while ((wlen<len) && *hexstr && *(hexstr+1))    //last condition cause np if check fails on middle one.thats coz of short-circuit evaluation
@@ -117,97 +116,74 @@ VOID c(VOID *x)
     const byte c=(byte)x; 
     q->EnableWindow();
     bh->EnableWindow(0);
-    
-    CWin32Heap stringHeap(HEAP_NO_SERIALIZE, 0, 0);
-    CAtlStringMgr M(&stringHeap);
-    CString bear(&M);
 	std::wstringstream t;
-
     SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED | ES_DISPLAY_REQUIRED);
 	SETTEXTEX fw;
 	fw.flags=4;
 	fw.codepage=1200;
 	
 	unsigned char hash1[32];
-	uint32_t timestamp_len = 0, scriptSig_len = 0, pubkey_len = 0, pubkeyScript_len = 0;
-	    
-	pubkey_len = wcslen(mount_tx->m_pubkey) / 2; // One byte is represented as two hex characters, thus we divide by two to get real length.
-	timestamp_len = wcslen(mount_tx->m_timestamp);
+	uint32_t timestamp_length = wcslen(mount_tx->m_timestamp);
 	CW2A timestamp((LPCWSTR)mount_tx->m_timestamp);
 	CW2A pubkey((LPCWSTR)mount_tx->m_pubkey);
-
- 	Transaction transaction={ {},0 ,/* drift */1 ,1 , {},0xFFFFFFFF ,0 ,0xFFFFFFFF ,1 ,50*COIN ,0 ,0 };
-	scriptSig_len = timestamp_len;
+	Transaction transaction={ {},/* version */1 ,1 , {},0xFFFFFFFF ,/* sequ */0xFFFFFFFF ,1 ,50*COIN , pubscriptlength , {} ,0 };
 
 	// Encode pubkey to binary and prepend pubkey size, then append the OP_CHECKSIG byte	
-	pubkeyScript_len =pubkey_len+2;
-	transaction.pubkeyScript =(uint8_t *)malloc(pubkeyScript_len);
 	transaction.pubkeyScript[0] = 0x41; //   A public key is 32 bytes X coordinate, 32 bytes Y coordinate and one byte 0x04, so 65 bytes i.e 0x41 in Hex.
-	hex2bin(transaction.pubkeyScript+1, pubkey, pubkey_len); // No error checking, yeah.   
-	transaction.pubkeyScript[pubkeyScript_len - 1] = OP_CHECKSIG;
-	
-	// Encode timestamp to binary
-	transaction.scriptSig =(uint8_t *) malloc(8); //max size of first part
-	uint32_t scriptSig_pos = 0;
+	hex2bin(transaction.pubkeyScript + 1, pubkey ,65 ); // No error checking, yeah.   
+	transaction.pubkeyScript[66] = OP_CHECKSIG;
 	
 	/*  nbits related stuff , first is real size of value in bytes , next is value with 
 	   null bytes on the left removed  */
-	short pl;
-	transaction.scriptSig[scriptSig_pos++] = pl = 0x01+((mount_tx->m_nb >> 8)>0)+((mount_tx->m_nb >> 16)>0)+((mount_tx->m_nb >> 24)>0);	    // statement (smth > 0) returns 0 or 1
-	memcpy(transaction.scriptSig + scriptSig_pos, &mount_tx->m_nb, pl);
-	scriptSig_pos = scriptSig_pos + pl;
+	uint8_t serializedData[500]; 
+	uint32_t serializedData_pos = 0;
+	memcpy(serializedData, &transaction.version, 41);  
+	serializedData_pos = serializedData_pos + 41;
+	/* fo' sho' */ 
+//	std::cout << offsetof(Transaction,prevoutIndex) + 4 /* size of prevoutIndex */ - offsetof(Transaction,version);/* OK output : " 41 " */	
+	serializedData_pos++;  // +41 byte reserved 
+
+	short pl= 0x01+!!(mount_tx->m_nb >> 8)+!!(mount_tx->m_nb >> 16)+!!(mount_tx->m_nb >> 24);	
+	serializedData[serializedData_pos++] =pl;     // statement (smth > 0) returns 0 or 1
+	memcpy(serializedData + serializedData_pos, &mount_tx->m_nb, pl);
+	serializedData_pos = serializedData_pos + pl;
 	
 	// It should essentially mean PUSH 1 byte on the stack which in this case is 0x04 or just 4
-	transaction.scriptSig[scriptSig_pos++] = 0x01;
-	transaction.scriptSig[scriptSig_pos++] = 0x04;
-	transaction.scriptSig[scriptSig_pos++] = (uint8_t)scriptSig_len; 
-	scriptSig_len += scriptSig_pos;
-	transaction.scriptSig = (uint8_t*)realloc(transaction.scriptSig, scriptSig_len);
-	memcpy(transaction.scriptSig+scriptSig_pos, timestamp, timestamp_len);
-	
-	uint32_t serializedLen = 
+	serializedData[serializedData_pos++] = 0x01;
+	serializedData[serializedData_pos++] = 0x04;
+	serializedData[serializedData_pos++] = timestamp_length; 
+	uint32_t  scriptSig_length = serializedData_pos  - 42 + timestamp_length; // serializedData_pos inc'ed already to go as size
+	serializedData[41] = scriptSig_length;
+
+	uint32_t serializedLength = 
 	4    // tx version  
 	+1   // number of inputs
 	+32  // hash of previous output
 	+4   // previous output's index
 	+1   // 1 byte for the size of scriptSig (?)
-	+scriptSig_len
+	+scriptSig_length
 	+4   // size of sequence
 	+1   // number of outputs
 	+8   // 8 bytes for coin value
 	+1   // 1 byte to represent size of the pubkey Script
-	+pubkeyScript_len
+	+pubscriptlength
 	+4;   // 4 bytes for lock time
+
+	memcpy(serializedData + serializedData_pos, timestamp, timestamp_length);
+	serializedData_pos = serializedData_pos + timestamp_length;
+	/*scriptsig is done*/
 	
-	// Now let's serialize the data
-	uint32_t serializedData_pos = 0;
-	transaction.serializedData = (uint8_t *)malloc(serializedLen);
-	memcpy(transaction.serializedData, &transaction.version, 41/* 4 + 1 + 32 + 4 */);  
-	/* fo' sho' */
-//	std::cout << offsetof(Transaction,prevoutIndex) + sizeof(uint32_t) - offsetof(Transaction,version);	
-	serializedData_pos += 41; 
-	memcpy(transaction.serializedData+serializedData_pos, &scriptSig_len, 1);
-	serializedData_pos += 1;
-	memcpy(transaction.serializedData+serializedData_pos, transaction.scriptSig, scriptSig_len);
-	serializedData_pos += scriptSig_len;
-	memcpy(transaction.serializedData+serializedData_pos, &transaction.sequence, 13/* 4 + 1 + 8 */);
-	serializedData_pos += 13;
-	memcpy(transaction.serializedData+serializedData_pos, &pubkeyScript_len, 1);
-	serializedData_pos += 1;
-	memcpy(transaction.serializedData+serializedData_pos, transaction.pubkeyScript, pubkeyScript_len);
-	serializedData_pos += pubkeyScript_len;
-	memcpy(transaction.serializedData+serializedData_pos, &transaction.locktime, 4);
-	
-	// Now that the data is serialized
-	// we hash it with SHA256 and then hash that result to get merkle hash
-	SHA256(transaction.serializedData, serializedLen, hash1);
+	memcpy(serializedData + serializedData_pos, &transaction.sequence, 85);
+
+	// hash it with SHA256 and then hash that result to get merkle hash
+	SHA256(serializedData, serializedLength, hash1);
 	SHA256(hash1, 32, transaction.merkleHash);
 	
 	std::wstring merkleHash = bin2hex(transaction.merkleHash, 32);
-	std::reverse(transaction.merkleHash,transaction.merkleHash +32); 
+	std::reverse(transaction.merkleHash,transaction.merkleHash + 32); 
 	std::wstring merkleHashSwapped = bin2hex(transaction.merkleHash, 32);
-	std::wstring txScriptSig = bin2hex(transaction.scriptSig, scriptSig_len);
-	std::wstring pubScriptSig = bin2hex(transaction.pubkeyScript, pubkeyScript_len);
+	std::wstring txScriptSig = bin2hex(serializedData + 42, scriptSig_length);
+	std::wstring pubScriptSig = bin2hex(transaction.pubkeyScript, pubscriptlength);
 
 	t<<L"Coinbase: "<< txScriptSig <<L"\n\nPubkeyScript: "<<pubScriptSig <<L"\n\nMerkle Hash: "<<merkleHash<<L"\nByteswapped: "<< merkleHashSwapped << std::endl;
 	t<<L"Generating block...\n";
@@ -265,9 +241,6 @@ VOID c(VOID *x)
 	    if (terminator) { PostMessage(hz, WM_CLOSE, NULL, NULL);}
 	    else {	    }
 	    b -= 3;
-	free(transaction.serializedData);
-	free(transaction.scriptSig);
-	free(transaction.pubkeyScript);
 	    bren = 5;
 	    break;
 	}

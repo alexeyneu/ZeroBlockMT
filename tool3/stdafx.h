@@ -5,7 +5,7 @@
 
 #pragma once
 #pragma fenv_access(on)  
-
+#include <cstdint>
 #include <sstream>
 
 #ifndef VC_EXTRALEAN
