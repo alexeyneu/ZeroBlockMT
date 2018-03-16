@@ -1,8 +1,8 @@
 
 // MainFrm.cpp : implementation of the CMainFrame class
 //
- 
-
+const int fzc=5; 
+const uint64_t COIN = 100000000;
 #include "stdafx.h"
 #include "tool3.h"
 #include <Richedit.h>
@@ -143,7 +143,7 @@ VOID c(VOID *x)
 //	std::cout << offsetof(Transaction,prevoutIndex) + 4 /* size of prevoutIndex */ - offsetof(Transaction,version);/* OK output : " 41 " */	
 	serializedData_pos++;  // +41 byte reserved 
 
-	short pl= 0x01+!!(mount_tx->m_nb >> 8)+!!(mount_tx->m_nb >> 16)+!!(mount_tx->m_nb >> 24);	
+	short pl= 0x01+(mount_tx->m_nb >> 8 > 0)+(mount_tx->m_nb >> 16 > 0)+(mount_tx->m_nb >> 24 > 0);	
 	serializedData[serializedData_pos++] =pl;     // statement (smth > 0) returns 0 or 1
 	memcpy(serializedData + serializedData_pos, &mount_tx->m_nb, pl);
 	serializedData_pos = serializedData_pos + pl;
