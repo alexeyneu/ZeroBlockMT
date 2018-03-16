@@ -1,8 +1,6 @@
 
 // MainFrm.cpp : implementation of the CMainFrame class
 //
-const int fzc=5; 
-const uint64_t COIN = 100000000;
 #include "stdafx.h"
 #include "tool3.h"
 #include <Richedit.h>
