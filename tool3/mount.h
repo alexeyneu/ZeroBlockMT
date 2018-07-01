@@ -19,10 +19,10 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public:
-	UINT m_nonce;
 	afx_msg void OnBnClickedButton1();
-	UINT m_ut;
-	UINT m_nb;
+	CString m_pkey;
 	CString m_timestamp;
-	CString m_pubkey;
+	UINT m_nb;
+	UINT m_ut;
+	UINT m_nonce;
 };

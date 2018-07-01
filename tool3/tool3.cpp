@@ -50,11 +50,10 @@ BOOL Ctool3App::InitInstance()
 
 	CWinApp::InitInstance();
 	h=this->m_hInstance;
-
+	AfxInitRichEdit2();
 	// Parse command line for standard shell commands, DDE, file open
 	CCommandLineInfo cmdInfo;
 	ParseCommandLine(cmdInfo);
-
 	EnableTaskbarInteraction(FALSE);
 
 	 b=LoadLibrary(L"MSFTEDIT.DLL"); //richedit

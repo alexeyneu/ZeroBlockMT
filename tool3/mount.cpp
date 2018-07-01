@@ -13,12 +13,15 @@ IMPLEMENT_DYNAMIC(mount, CDialogEx)
 
 mount::mount(CWnd* pParent /*=NULL*/)
 	: CDialogEx(mount::IDD, pParent)
+	, m_nb(0)
+	, m_ut(0)
+	, m_nonce(0)
 {
 	m_nonce = 0;
 	m_ut = 0;
 	m_nb = 0;
+	m_pkey = _T("");
 	m_timestamp = _T("");
-	m_pubkey = _T("");
 }
 
 mount::~mount()
@@ -30,13 +33,13 @@ mount::~mount()
 void mount::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Text(pDX, IDC_EDIT5, m_nonce);
-	DDX_Text(pDX, IDC_EDIT4, m_ut);
-	DDX_Text(pDX, IDC_EDIT3, m_nb);
-	DDX_Text(pDX, IDC_EDIT2, m_timestamp);
+	DDX_Text(pDX, IDC_RICHEDIT21, m_pkey);
+	DDV_MaxChars(pDX, m_pkey, 65);
+	DDX_Text(pDX, IDC_RICHEDIT22, m_timestamp);
 	DDV_MaxChars(pDX, m_timestamp, 254);
-	DDX_Text(pDX, IDC_EDIT1, m_pubkey);
-	DDV_MaxChars(pDX, m_pubkey, 130);
+	DDX_Text(pDX, IDC_RICHEDIT23, m_nb);
+	DDX_Text(pDX, IDC_RICHEDIT24, m_ut);
+	DDX_Text(pDX, IDC_RICHEDIT25, m_nonce);
 }
 
 BEGIN_MESSAGE_MAP(mount, CDialogEx)

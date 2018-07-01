@@ -30,9 +30,8 @@
 #include <afxcontrolbars.h>
 
 //#include <afxcontrolbars.h>     // MFC support for ribbons and control bars
-#ifdef _MSC_VER
 #pragma comment(lib,"libcrypto.lib")
-#endif
+
 
 
 #ifdef _UNICODE

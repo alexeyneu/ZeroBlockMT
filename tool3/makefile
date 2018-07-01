@@ -1,6 +1,5 @@
 CC=cl
-CFLAGS=-c -DSTRICT -G3 -Ow -W3 -Zp -Tp
-CFLAGSMT=-c /D_WIN64 /D_AFXDLL /MD /nologo /W3 /WX- /O2 /Oi /Ot /Oy- /DWIN32 /D_WINDOWS /DNDEBUG /D_UNICODE /DUNICODE /Gm- /GS- /Gy /arch:SSE2 /fp:precise /Zc:wchar_t /Zc:forScope /Fax64\Release\ /Fox64\Release\ /Fdx64\Release\vc100.pdb /Gd /errorReport:none 
+CFLAGSMT=-c /D_WIN64  /D"_ATL_DLL" /D"_AFXDLL" /MD /nologo /W3 /WX- /O2 /Oi /Ot /Oy- /DWIN32 /D_WINDOWS /DNDEBUG /D_UNICODE /DUNICODE /Gm- /GS- /Gy /arch:SSE2 /fp:precise /Zc:wchar_t /Zc:forScope /Fax64\Release\ /Fox64\Release\ /Fdx64\Release\vc100.pdb /Gd /errorReport:none 
 LINKER=link
 GUIFLAGS=-SUBSYSTEM:windows /OUT:x64\Release\tool3.exe /NOLOGO  /PDB:"x64\Release\tool3.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:NOICF /TLBID:1 /DYNAMICBASE /NXCOMPAT /MACHINE:X64 /ERRORREPORT:NONE /ENTRY:wWinMainCRTStartup
 DLLFLAGS=-SUBSYSTEM:windows -DLL
@@ -14,7 +13,7 @@ docks : trail x64\Release\tool3.exe
 	$(MT) $(MTSTUFF) -outputresource:x64\Release\tool3.exe
 
 x64\Release\tool3.exe : x64\Release\tool3.obj x64\Release\MainFrm.obj x64\Release\mount.obj x64\Release\tool3.res
-     $(LINKER) $(GUIFLAGS)  x64\Release\MainFrm.obj x64\Release\tool3.obj x64\Release\mount.obj  x64\Release\tool3.res $(GUILIBS)
+     $(LINKER) $(GUIFLAGS)   x64\Release\MainFrm.obj x64\Release\tool3.obj x64\Release\mount.obj  x64\Release\tool3.res $(GUILIBS) 
 	 
 trail:
 	-@ if NOT EXIST "x64" mkdir "x64"

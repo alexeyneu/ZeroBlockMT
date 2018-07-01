@@ -117,7 +117,7 @@ VOID c(VOID *x)
 	fw.flags=4;
 	fw.codepage=1200;
 	std::string  timestamp = CW2A((LPCWSTR)mount_tx->m_timestamp);
-	std::string  pubkey = CW2A((LPCWSTR)mount_tx->m_pubkey);
+	std::string  pubkey = CW2A((LPCWSTR)mount_tx->m_pkey);
 	uint32_t nBits = mount_tx->m_nb;
 	
 	unsigned char hash1[32], serializedData[857];
@@ -257,7 +257,7 @@ void CMainFrame::uw()
 	{
 		mount_tx->m_nb=mount_txn->m_nb;
 		mount_tx->m_nonce=mount_txn->m_nonce;
-		mount_tx->m_pubkey=mount_txn->m_pubkey;
+		mount_tx->m_pkey=mount_txn->m_pkey;
 		mount_tx->m_timestamp=mount_txn->m_timestamp;
 		mount_tx->m_ut=mount_txn->m_ut;
 		delete mount_txn;
