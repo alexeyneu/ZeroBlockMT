@@ -137,7 +137,7 @@ VOID c(VOID *x)
 	memcpy(serializedData + serializedData_pos + timestamp.length(), &transaction.sequence, sizetwo);
 	uint32_t  scriptSig_length = serializedData[sizeone] = pl + 4/*abc round-up*/  + timestamp.length(); 
 	SHA256(serializedData, sizeof transaction + 1 + scriptSig_length, hash1);  /* + 1 coz of serializedData[sizeone]*/
-	blockheader block_header = {1/*version*/,{}/*hprev*/,{}/*merk*/,mount_tx->m_ut == 0 ? time(NULL) : mount_tx->m_ut ,nBits ,mount_tx->m_nonce };
+	blockheader block_header = {1/*version*/,{}/*hprev*/,{}/*merk*/,mount_tx->m_ut == 0 ? time(NULL) + c : mount_tx->m_ut + c,nBits ,mount_tx->m_nonce };
 	SHA256(hash1, 32, block_header.merk);// hash it with SHA256 and then hash that result to get merkle hash
 	std::wstring merkleHash = bin2hex( block_header.merk, 32);
 	std::reverse(block_header.merk,block_header.merk +32); 
