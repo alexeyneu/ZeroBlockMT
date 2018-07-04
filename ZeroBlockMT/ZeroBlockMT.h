@@ -14,29 +14,6 @@ doesn't need that.same define statements there to ensure that nothing more is in
 second : if structure has alignment you can copy it as block too but it gives nothing in this case.*/
 
 
-//here are PODs coz there is no constructors and others
-struct Transaction {
-#pragma pack(1)
-/* +0 */uint32_t version;   	/* vs bitcoin-api tx block : merkleHash[32] removed */
-	uint8_t  numInputs; 
-	uint8_t  prevOutput[32];
-	uint32_t prevoutIndex; // +41
-/* +0 */uint32_t sequence;
-	uint8_t  numOutputs; 
-	uint64_t outValue; 
-	uint8_t  pubscriptlength; //it isn't in the bitcoin-api tx block also
-	uint8_t  pubkeyScript[::pubscriptlength];
-	uint32_t locktime;   // +85
-} ;
-struct blockheader {
-#pragma pack(1)
-	uint32_t blockversion;
-	unsigned char hashPrevBlock[32];
-	unsigned char merk[32];
-	uint32_t unixtime;
-	uint32_t nBits;
-	uint32_t startNonce;
-};
 
 
 // CZeroBlockMTApp:

@@ -4,7 +4,7 @@
 // but are changed infrequently
 
 #pragma once
-#pragma fenv_access(on)  
+// #pragma fenv_access(on)  
 #include <cstdint>
 #include <sstream>
 

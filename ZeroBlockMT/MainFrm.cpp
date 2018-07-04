@@ -109,8 +109,7 @@ int b,terminator;
 VOID c(VOID *x)
 {	
     const byte c=(byte)x; 
-    q->EnableWindow();
-    bh->EnableWindow(0);
+
 	std::wstringstream t;
     SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED | ES_DISPLAY_REQUIRED);
 	SETTEXTEX fw;
@@ -128,7 +127,7 @@ VOID c(VOID *x)
 	short sizetwo = sizeof transaction -  sizeone;/* OK output :  85  */
 	memcpy(serializedData, &transaction, sizeone);
 	uint32_t serializedData_pos = sizeone + 1;// 42nd byte reserved
-	short pl = 0x01 + (nBits >> 8 > 0) + (nBits >> 16>0)+(nBits >> 24>0);  // size of nbits , not neccesary same as sizeof(nbits)   
+	BYTE pl = 0x01 + (nBits >> 8 > 0) + (nBits >> 16>0)+(nBits >> 24>0);  // size of nbits , not neccesary same as sizeof(nbits)   
 	memcpy(serializedData + serializedData_pos, &nBits, serializedData[serializedData_pos++]/*a:1*/ = pl); // scriptSig {
 	serializedData_pos = serializedData_pos + pl;
 	*(short*)(serializedData + serializedData_pos) = 0x0401/*b:2*/; // {0x01,0x04} ,script op's 
@@ -184,10 +183,12 @@ VOID c(VOID *x)
 
 		if (b) 
 		{
-		    q->EnableWindow(0);
-		    bh->EnableWindow();
-		    if (terminator) { PostMessage(hz, WM_CLOSE, NULL, NULL);}
-		    else {	    }
+		    if(c==0) 
+			{
+				q->EnableWindow(0);
+				bh->EnableWindow();
+			    if (terminator) { PostMessage(hz, WM_CLOSE, NULL, NULL);}
+			}
 		    b -= 3;
 		    bren = 5;
 		    break;
@@ -205,6 +206,8 @@ void CMainFrame::tr()
 			rew[0]=AfxBeginThread((AFX_THREADPROC)c,(LPVOID)0);
 			rew[1]=AfxBeginThread((AFX_THREADPROC)c,(LPVOID)1);
 			rew[2]=AfxBeginThread((AFX_THREADPROC)c,(LPVOID)2);
+			q->EnableWindow();
+			bh->EnableWindow(0);
 }
 
 void CMainFrame::w()
@@ -227,13 +230,13 @@ void CMainFrame::OnDestroy()
 
 void CMainFrame::OnClose()
 {
-	wchar_t w[140],ferrum[198];
+	wchar_t w[140], ferrum[198];
 	if(terminator2)
 	{
-	HANDLE t[]={rew[0]->m_hThread,rew[1]->m_hThread,rew[2]->m_hThread};    
-	DWORD c = WaitForMultipleObjects(3,t,1,20000); // 20 seconds
-//	if(c==WAIT_TIMEOUT) 
-	CWnd::OnClose();
+		HANDLE t[]={rew[0]->m_hThread, rew[1]->m_hThread, rew[2]->m_hThread};    
+		DWORD c = WaitForMultipleObjects(3, t, 1, 2000); // 2 seconds
+	//	if(c==WAIT_TIMEOUT) 
+		CWnd::OnClose();
 	}
 	terminator2++;
 
@@ -243,7 +246,7 @@ void CMainFrame::OnClose()
 	}
 	else
 	{
-		terminator =1;
+		terminator = 1;
 		if(!b) this->w();
 	}
 }
@@ -262,7 +265,7 @@ void CMainFrame::uw()
 		mount_tx->m_ut=mount_txn->m_ut;
 		delete mount_txn;
 	}
-	int c=mount_tx->DoModal();
+	int c = mount_tx->DoModal();
 	
 	if(c!=IDOK) { delete mount_tx ; mount_tx = NULL; bh->EnableWindow(0); return;}
 	bh->EnableWindow();
