@@ -2,7 +2,7 @@
 // MainFrm.cpp : implementation of the CMainFrame class
 //
 #include "stdafx.h"
-#include "tool3.h"
+#include "ZeroBlockMT.h"
 #include <Richedit.h>
 #include "MainFrm.h"
 #include <openssl/sha.h>

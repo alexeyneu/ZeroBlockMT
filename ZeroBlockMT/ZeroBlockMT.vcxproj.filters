@@ -16,21 +16,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
-    <None Include="res\tool3.rc2">
+    <None Include="res\ZeroBlockMT.rc2">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="res\tool3.ico">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\hyg.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\9.bmp">
+    <None Include="res\ZeroBlockMT.ico">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="tool3.h">
+    <ClInclude Include="ZeroBlockMT.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
@@ -50,7 +44,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="tool3.cpp">
+    <ClCompile Include="ZeroBlockMT.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
@@ -64,7 +58,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="tool3.rc">
+    <ResourceCompile Include="ZeroBlockMT.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

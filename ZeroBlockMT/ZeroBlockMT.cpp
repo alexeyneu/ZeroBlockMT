@@ -1,11 +1,11 @@
 
-// tool3.cpp : Defines the class behaviors for the application.
+// ZeroBlockMT.cpp : Defines the class behaviors for the application.
 //
 
 #include "stdafx.h"
 #include "afxwinappex.h"
 #include "afxdialogex.h"
-#include "tool3.h"
+#include "ZeroBlockMT.h"
 #include "MainFrm.h"
 
 
@@ -15,37 +15,37 @@
 #endif
 
 
-// Ctool3App
+// CZeroBlockMTApp
 
 
 
 
-BEGIN_MESSAGE_MAP(Ctool3App, CWinApp)
+BEGIN_MESSAGE_MAP(CZeroBlockMTApp, CWinApp)
 
 END_MESSAGE_MAP()
 
 
-// Ctool3App construction
+// CZeroBlockMTApp construction
 
-Ctool3App::Ctool3App()
+CZeroBlockMTApp::CZeroBlockMTApp()
 {
 	// TODO: replace application ID string below with unique ID string; recommended
 	// format for string is CompanyName.ProductName.SubProduct.VersionInformation
-	SetAppID(_T("tool3.AppID.NoVersion"));
+	SetAppID(_T("ZeroBlockMT.AppID.NoVersion"));
 	start=0;
 	// TODO: add construction code here,
 	// Place all significant initialization in InitInstance
 }
 
-// The one and only Ctool3App object
+// The one and only CZeroBlockMTApp object
 
-Ctool3App theApp;
+CZeroBlockMTApp theApp;
 
-// Ctool3App initialization
+// CZeroBlockMTApp initialization
 CMainFrame* pFrame;
 HINSTANCE h;
 HANDLE b;
-BOOL Ctool3App::InitInstance()
+BOOL CZeroBlockMTApp::InitInstance()
 {
 
 	CWinApp::InitInstance();
@@ -80,7 +80,7 @@ BOOL Ctool3App::InitInstance()
 
 	RegisterClassEx(&w);
 	
-	pFrame->CreateEx( WS_EX_APPWINDOW|WS_EX_COMPOSITED,L"t",L"tool3",WS_OVERLAPPEDWINDOW,CRect(20,0,487,592),NULL,0);
+	pFrame->CreateEx( WS_EX_APPWINDOW|WS_EX_COMPOSITED,L"t",L"ZeroBlockMT",WS_OVERLAPPEDWINDOW,CRect(20,0,487,592),NULL,0);
 	// The one and only window has been initialized, so show and update it
 	pFrame->ShowWindow(SW_SHOW);
 	// call DragAcceptFiles only if there's a suffix
@@ -88,18 +88,18 @@ BOOL Ctool3App::InitInstance()
 	return TRUE;
 }
 
-int Ctool3App::ExitInstance()
+int CZeroBlockMTApp::ExitInstance()
 {
 	FreeLibrary((HMODULE)b);
 	delete pFrame;
 	return CWinApp::ExitInstance();
 }
 
-// Ctool3App message handlers
+// CZeroBlockMTApp message handlers
 
 
 
-// Ctool3App message handlers
+// CZeroBlockMTApp message handlers
 
 
 

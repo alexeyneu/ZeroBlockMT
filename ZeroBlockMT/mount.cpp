@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "tool3.h"
+#include "ZeroBlockMT.h"
 #include "mount.h"
 #include "afxdialogex.h"
 

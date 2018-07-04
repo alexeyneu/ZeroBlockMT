@@ -1,5 +1,5 @@
 
-// tool3.h : main header file for the tool3 application
+// ZeroBlockMT.h : main header file for the ZeroBlockMT application
 const uint8_t pubscriptlength = 67; // 2 + 65 ,  if unknown at compile time ... 
 
 #pragma once
@@ -39,14 +39,14 @@ struct blockheader {
 };
 
 
-// Ctool3App:
-// See tool3.cpp for the implementation of this class
+// CZeroBlockMTApp:
+// See ZeroBlockMT.cpp for the implementation of this class
 //
 
-class Ctool3App : public CWinApp
+class CZeroBlockMTApp : public CWinApp
 {
 public:
-	Ctool3App();
+	CZeroBlockMTApp();
 	int start;
 
 // Overrides
@@ -61,4 +61,4 @@ public:
 	DECLARE_MESSAGE_MAP()
 };
 
-extern Ctool3App theApp;
+extern CZeroBlockMTApp theApp;
