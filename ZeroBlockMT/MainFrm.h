@@ -10,21 +10,23 @@
 
 #pragma once
 const uint64_t COIN = 100000000;
+const uint32_t OP_CHECKSIG = 172; // This is expressed as 0xAC
+const uint8_t pubscriptlength = 67; // 2 + 65 ,  if unknown at compile time ... 
 
-//here are PODs coz there is no constructors and others
 struct Transaction {
 #pragma pack(1)
-/* +0 */uint32_t version;   	/* vs bitcoin-api tx block : merkleHash[32] removed */
-	uint8_t  numInputs; 
+/* +0 */uint32_t version = 1;   	/* vs bitcoin-api tx block : merkleHash[32] removed */
+	uint8_t  numInputs = 1; 
 	uint8_t  prevOutput[32];
-	uint32_t prevoutIndex; // +41
-/* +0 */uint32_t sequence;
-	uint8_t  numOutputs; 
-	uint64_t outValue; 
-	uint8_t  pubscriptlength; //it isn't in the bitcoin-api tx block also
+	uint32_t prevoutIndex = 0xFFFFFFFF; // +41
+/* +0 */uint32_t sequence = 0xFFFFFFFF;
+	uint8_t  numOutputs = 1; 
+	uint64_t outValue = 50*COIN; 
+	uint8_t  pubscriptlength = ::pubscriptlength; //it isn't in the bitcoin-api tx block also
 	uint8_t  pubkeyScript[::pubscriptlength];
-	uint32_t locktime;   // +85
+	uint32_t locktime = 0;   // +85
 } ;
+
 struct blockheader {
 #pragma pack(1)
 	uint32_t blockversion;
@@ -35,7 +37,6 @@ struct blockheader {
 	uint32_t startNonce;
 };
 
-const uint32_t OP_CHECKSIG = 172; // This is expressed as 0xAC
 
 
 class CMainFrame : public CWnd

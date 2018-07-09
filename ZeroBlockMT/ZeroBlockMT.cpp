@@ -29,12 +29,8 @@ END_MESSAGE_MAP()
 
 CZeroBlockMTApp::CZeroBlockMTApp()
 {
-	// TODO: replace application ID string below with unique ID string; recommended
-	// format for string is CompanyName.ProductName.SubProduct.VersionInformation
 	SetAppID(_T("ZeroBlockMT.AppID.NoVersion"));
 	start=0;
-	// TODO: add construction code here,
-	// Place all significant initialization in InitInstance
 }
 
 // The one and only CZeroBlockMTApp object
@@ -83,8 +79,6 @@ BOOL CZeroBlockMTApp::InitInstance()
 	pFrame->CreateEx( WS_EX_APPWINDOW|WS_EX_COMPOSITED,L"t",L"ZeroBlockMT",WS_OVERLAPPEDWINDOW,CRect(20,0,487,592),NULL,0);
 	// The one and only window has been initialized, so show and update it
 	pFrame->ShowWindow(SW_SHOW);
-	// call DragAcceptFiles only if there's a suffix
-	//  In an SDI app, this should occur after ProcessShellCommand
 	return TRUE;
 }
 

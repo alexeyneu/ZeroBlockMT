@@ -105,7 +105,7 @@ size_t hex2bin(unsigned char *p , const char *hexstr,const size_t length) {
 
 int bren=5;
 int b,terminator;
-
+Transaction transaction;
 VOID c(VOID *x)
 {	
     const byte c=(byte)x; 
@@ -120,7 +120,8 @@ VOID c(VOID *x)
 	uint32_t nBits = mount_tx->m_nb;
 	
 	unsigned char hash1[32], serializedData[857];
-	Transaction transaction = {/*version*/1,/*inputs*/1, {},/*poutindex*/0xFFFFFFFF,/*sequ*/0xFFFFFFFF,/*outputs*/1 ,50*COIN ,pubscriptlength, {0x41}/*pubscript[0]:(?)opcode or size */};
+
+	transaction.pubkeyScript[0] = 0x41;
 	hex2bin(transaction.pubkeyScript + 1, pubkey.c_str(), pubkey.length()/2); 	// pubkey to bytes ,  then append the OP_CHECKSIG byte	
 	transaction.pubkeyScript[pubscriptlength - 1] = OP_CHECKSIG;
 	short sizeone = offsetof(Transaction, sequence);  /*, OK output :  41  */

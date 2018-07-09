@@ -1,6 +1,5 @@
 
 // ZeroBlockMT.h : main header file for the ZeroBlockMT application
-const uint8_t pubscriptlength = 67; // 2 + 65 ,  if unknown at compile time ... 
 
 #pragma once
 
