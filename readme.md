@@ -1,7 +1,7 @@
  - Sys Req:  
-Visual C++ 2010 redist 
-https://www.microsoft.com/en-us/download/details.aspx?id=14632  
-openssl  
+Visual C++ 2013 redist
+https://www.microsoft.com/en-us/download/details.aspx?id=40784
+openssl
 Req: `.lib` out of openssl build  
   https://github.com/openssl/openssl/tree/master/include  
 https://github.com/pocoproject/openssl/tree/develop/build/win64/bin/release  
@@ -18,11 +18,11 @@ https://github.com/DMDcoin/Diamond/blob/a1a7f6b8a3bad0df8fd8ddb9ead0347b1fa440f4
 i.e. .One used there is not mine.
 ## build:  
 
-nmake holds well on non-2010  
- - ms visual studio 2010 (C++)  
+nmake holds well on non-2013
+ - ms visual studio 2013 (C++)
 32/64-bit : conf manager/change active solution platform  
  - msbuild  
-vs command prompt(2010)
+VS2013 x64 Native Tools Command Prompt
 ```
 msbuild  tool3.sln /property:Configuration=Release   /property:Platform=x64
 
@@ -31,7 +31,7 @@ msbuild  tool3.sln \
 ```
 - nmake  
   
-vs win64 command prompt (standard command prompt works too if env tuned right ) 
+VS2013 x64 Native Tools Command Prompt (standard command prompt works too if env tuned right )
 ```
 cd tool3
 nmake
