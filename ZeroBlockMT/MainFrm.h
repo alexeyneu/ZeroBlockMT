@@ -80,6 +80,8 @@ public:
 protected:
 public:
 	afx_msg void OnClose();
+protected:
+	afx_msg LRESULT OnCtlcolorstatic(WPARAM wParam, LPARAM lParam);
 };
 extern HINSTANCE h;
 

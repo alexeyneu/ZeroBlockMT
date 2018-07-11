@@ -25,6 +25,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CWnd)
 	ON_BN_CLICKED(2233,uw)
 	ON_WM_DESTROY()
 	ON_WM_CLOSE()
+	ON_MESSAGE(WM_CTLCOLORSTATIC, &CMainFrame::OnCtlcolorstatic)
 END_MESSAGE_MAP()
 
 // CMainFrame construction/destruction
@@ -47,7 +48,7 @@ HANDLE cl;
 CButton *finA;
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
-{	
+{
 	mount_tx=NULL;
 	cl=CreateEvent(NULL,1,0,NULL);
 	if (CWnd::OnCreate(lpCreateStruct) == -1)
@@ -216,6 +217,7 @@ void CMainFrame::w()
 	b=9;
 }
 
+HBRUSH hbrBkgnd;
 void CMainFrame::OnDestroy()
 {
 	CWnd::OnDestroy();
@@ -226,6 +228,8 @@ void CMainFrame::OnDestroy()
 	delete b7[2];
 //	delete rew;
 	delete finA;
+	DeleteObject(hbrBkgnd);
+
 	if(mount_tx) delete mount_tx;
 }
 
@@ -269,5 +273,17 @@ void CMainFrame::uw()
 	int c = mount_tx->DoModal();
 	
 	if(c!=IDOK) { delete mount_tx ; mount_tx = NULL; bh->EnableWindow(0); return;}
-	bh->EnableWindow();
+	bh->EnableWindow(); 
+}
+
+afx_msg LRESULT CMainFrame::OnCtlcolorstatic(WPARAM wParam, LPARAM lParam)
+{
+	HDC hdcStatic = (HDC)wParam;
+	SetTextColor(hdcStatic, RGB(2, 5, 55));
+	SetBkColor(hdcStatic, RGB(255, 255, 255));
+        if (hbrBkgnd == NULL)
+        {
+            hbrBkgnd = CreateSolidBrush(RGB(255, 255, 255));
+        }
+        return (INT_PTR)hbrBkgnd;
 }
