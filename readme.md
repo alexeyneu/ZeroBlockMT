@@ -3,6 +3,7 @@ Visual C++ 2013 redist
 https://www.microsoft.com/en-us/download/details.aspx?id=40784
 openssl
 Req: `.lib` out of openssl build  
+SSE3 tech
   https://github.com/openssl/openssl/tree/master/include  
 https://github.com/pocoproject/openssl/tree/develop/build/win64/bin/release  
 
