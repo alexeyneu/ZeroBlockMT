@@ -156,6 +156,7 @@ VOID c(VOID *x)
 	unsigned char  block_hash1[32];
 	_declspec(align(16))	unsigned char  block_hashfp[32];
 	int drift = 4;
+		unsigned short throttle;
 	__m128i r, m, b;
 	while (1)
 	{
@@ -221,8 +222,8 @@ VOID c(VOID *x)
 			break;
 		}
 
-
-		if (b.m128i_u64[1] == 0) {// { .. , 0x00, 0x00, 0x00, 0x00 }
+			throttle = _mm_movemask_epi8(b);
+		 		if (throttle == 0)
 			{
 				std::reverse(block_hashfp, block_hashfp + 32);
 				std::wstring blockHash = bin2hex(block_hashfp, 32);
@@ -259,7 +260,7 @@ VOID c(VOID *x)
 			}
 		}
 
-	}
+	
 }
 
 
