@@ -156,8 +156,10 @@ VOID c(VOID *x)
 	unsigned char  block_hash1[32];
 	_declspec(align(16))	unsigned char  block_hashfp[32];
 	int drift = 4;
-		unsigned short throttle;
-	__m128i r, m, b;
+	__m128i r, m, b, camp;
+	__m128i zero = _mm_setzero_si128();
+
+	USHORT turt;
 	while (1)
 	{
 
@@ -222,9 +224,11 @@ VOID c(VOID *x)
 			break;
 		}
 
-			throttle = _mm_movemask_epi8(b);
-		 		if (throttle == 0)
-			{
+		camp = _mm_cmpeq_epi8(b ,zero);
+		turt = _mm_movemask_epi8(camp);
+		if (turt == 0xffff)
+		{
+
 				std::reverse(block_hashfp, block_hashfp + 32);
 				std::wstring blockHash = bin2hex(block_hashfp, 32);
 				t << L"\nBlock found!\nHash: " << blockHash << L"\nNonce: " << block_header.startNonce << L"\nUnix time: " << block_header.unixtime << std::endl;
