@@ -25,16 +25,15 @@ nmake holds well on non-2013
  - msbuild  
 VS2013 x64 Native Tools Command Prompt
 ```
-msbuild  tool3.sln /property:Configuration=Release   /property:Platform=x64
 
-msbuild  tool3.sln \
+msbuild  ZeroBlockMT.sln \
 /property:Configuration=Release   /property:Platform=Win32
 ```
 - nmake  
   
 VS2013 x64 Native Tools Command Prompt (standard command prompt works too if env tuned right )
 ```
-cd tool3
+cd ZeroBlockMT
 nmake
 ```
 
