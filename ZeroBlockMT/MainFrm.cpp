@@ -247,7 +247,7 @@ VOID c(VOID *x)
 				w.str(L"");
 			}
 
-			if (++block_header.startNonce == 0) block_header.unixtime = block_header.unixtime + 3;//trick is that to change pre-start time to find a block(really it's smth else) faster then nonce wraps
+			if (++block_header.startNonce == 0) block_header.unixtime = block_header.unixtime + 3;//trick is that to change pre-start time to find a block(really it's smth else) faster than nonce wraps
 			counter++;
 
 			if (::b)
