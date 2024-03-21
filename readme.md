@@ -12,9 +12,9 @@ https://github.com/pocoproject/openssl/tree/develop/build/win64/bin/release
 ![Screen1](/screens/Untitled%208.jpg)
 ## about 
  mines block that starts blockchain.  
-where are these tools were used?  
+where are these tools were used? say    
 https://github.com/DMDcoin/Diamond/blob/a1a7f6b8a3bad0df8fd8ddb9ead0347b1fa440f4/src/chainparams.cpp#L125  
-i.e. .One used there is not mine.
+One used there is not mine.
 ## build:  
 
 nmake holds well on non-2013  ( 2011 - 2019 )
