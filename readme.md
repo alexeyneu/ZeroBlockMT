@@ -2,7 +2,7 @@
 
 openssl
 on vs 2013+ there's windows kits folder shortcut. copy openssl's `.lib` and include files to folders there that contains stuff like that already
-SSE3 tech
+SSE3 tech  
 https://github.com/pocoproject/openssl/tree/develop/build/win64/bin/release
 
   
