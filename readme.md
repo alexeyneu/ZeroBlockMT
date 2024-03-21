@@ -1,11 +1,9 @@
  - Sys Req:  
-Visual C++ 2013 redist
-https://www.microsoft.com/en-us/download/details.aspx?id=40784
+
 openssl
-Req: `.lib` out of openssl build  
+on vs 2013+ there's windows kits folder shortcut. copy openssl's `.lib` and include files to folders there that contains stuff like that already
 SSE3 tech
-  https://github.com/openssl/openssl/tree/master/include  
-https://github.com/pocoproject/openssl/tree/develop/build/win64/bin/release  
+https://github.com/pocoproject/openssl/tree/develop/build/win64/bin/release
 
   
 [![version](https://img.shields.io/github/downloads/alexeyneu/ZeroBlockMT/total.svg?style=plastic)](https://github.com/alexeyneu/ZeroBlockMT/tree/master/x64/Release)  
@@ -19,7 +17,7 @@ https://github.com/DMDcoin/Diamond/blob/a1a7f6b8a3bad0df8fd8ddb9ead0347b1fa440f4
 i.e. .One used there is not mine.
 ## build:  
 
-nmake holds well on non-2013
+nmake holds well on non-2013  ( 2011 - 2019 )
  - ms visual studio 2013 (C++)
 32/64-bit : conf manager/change active solution platform  
  - msbuild  
