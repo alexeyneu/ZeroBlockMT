@@ -2,8 +2,6 @@
 Visual C++ 2017-20 redist
 Req:    
 SSE3 tech  
-  https://github.com/openssl/openssl/tree/master/include  
-
   
 [![version](https://img.shields.io/github/downloads/alexeyneu/ZeroBlockMT/total.svg?style=plastic)](https://github.com/alexeyneu/ZeroBlockMT/tree/master/x64/Release)  
 ![Screen1](/screens/Untitled%201.jpg)
