@@ -1,8 +1,8 @@
  - Sys Req:  
-Visual C++ 2013 redist
+Visual C++ 2017-20 redist
 https://www.microsoft.com/en-us/download/details.aspx?id=40784
 openssl
-Req: `.lib` out of openssl build  
+Req:    
 SSE3 tech
   https://github.com/openssl/openssl/tree/master/include  
 https://github.com/pocoproject/openssl/tree/develop/build/win64/bin/release  
@@ -19,11 +19,11 @@ https://github.com/DMDcoin/Diamond/blob/a1a7f6b8a3bad0df8fd8ddb9ead0347b1fa440f4
 i.e. .One used there is not mine.
 ## build:  
 
-nmake holds well on non-2013
- - ms visual studio 2013 (C++)
+nmake holds well on non-2019
+ - ms visual studio 2019 (C++)
 32/64-bit : conf manager/change active solution platform  
  - msbuild  
-VS2013 x64 Native Tools Command Prompt
+VS2019 x64 Native Tools Command Prompt
 ```
 
 msbuild  ZeroBlockMT.sln \
@@ -31,7 +31,7 @@ msbuild  ZeroBlockMT.sln \
 ```
 - nmake  
   
-VS2013 x64 Native Tools Command Prompt (standard command prompt works too if env tuned right )
+VS2019 x64 Native Tools Command Prompt (standard command prompt works too if env tuned right )
 ```
 cd ZeroBlockMT
 nmake
