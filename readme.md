@@ -1,9 +1,8 @@
  - Sys Req:  
 Visual C++ 2017-20 redist
 Req:    
-SSE3 tech
+SSE3 tech  
   https://github.com/openssl/openssl/tree/master/include  
-https://github.com/pocoproject/openssl/tree/develop/build/win64/bin/release  
 
   
 [![version](https://img.shields.io/github/downloads/alexeyneu/ZeroBlockMT/total.svg?style=plastic)](https://github.com/alexeyneu/ZeroBlockMT/tree/master/x64/Release)  
