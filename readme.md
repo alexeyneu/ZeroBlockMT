@@ -1,6 +1,6 @@
  - Sys Req:  
 Visual C++ 2017-20 redist
-https://www.microsoft.com/en-us/download/details.aspx?id=40784
+https://www.microsoft.com/en-us/download/details.aspx?id=40784  
 openssl  
 Req:    
 SSE3 tech
